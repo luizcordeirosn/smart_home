@@ -1,7 +1,9 @@
+from abc import ABC, abstractmethod
+
 from smart_home.utils.enums import ColorEnum
 
 
-class BrightnessRange:
+class ValidatorDescriptor(ABC):
     def __set_name__(self, owner, name):
         self.private_name = "_" + name
 
@@ -10,26 +12,31 @@ class BrightnessRange:
             return self
         return getattr(obj, self.private_name, None)
 
+    @abstractmethod
+    def __set__(self, obj, value):
+        pass
+
+
+class BrightnessRange(ValidatorDescriptor):
     def __set__(self, obj, value):
         if not isinstance(value, int):
-            raise ValueError("Brightness value isn't a int type")
+            raise ValueError("Brightness value must be an int type")
         if not (0 <= value <= 100):
-            raise ValueError("Brightness value isn't between 0 and 100")
+            raise ValueError("Brightness value must be an integer between 0 and 100")
         setattr(obj, self.private_name, value)
 
 
-class ValidColor:
-    def __set_name__(self, owner, name):
-        self.private_name = "_" + name
-
-    def __get__(self, obj, owner):
-        if obj is None:
-            return self
-        return getattr(obj, self.private_name, None)
-
+class ValidColor(ValidatorDescriptor):
     def __set__(self, obj, value):
         if not isinstance(value, ColorEnum):
-            raise ValueError("Color value isn't a ColorEnum type")
-        if value not in [color for color in ColorEnum]:
-            raise ValueError("Color value isn't a valid color")
+            raise ValueError("Color value must be a ColorEnum type")
+        setattr(obj, self.private_name, value)
+
+
+class PositivePower(ValidatorDescriptor):
+    def __set__(self, obj, value):
+        if not isinstance(value, int):
+            raise ValueError("Power value must be an int type")
+        if value < 0:
+            raise ValueError("Power value must be positive or 0")
         setattr(obj, self.private_name, value)

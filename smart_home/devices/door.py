@@ -1,14 +1,11 @@
-from dataclasses import dataclass
-
 from transitions import Machine
 from transitions.core import MachineError
 
 from smart_home.utils.enums import DoorEnum
 
 
-@dataclass
 class Door:
-    def __post_init__(self):
+    def __init__(self, initial_state: DoorEnum = DoorEnum.UNLOCKED):
         self.__invalid_attemps: int = 0
 
         transitions = [
@@ -34,12 +31,12 @@ class Door:
             },
         ]
 
-        self.__machine = Machine(
+        self.machine = Machine(
             self,
             states=DoorEnum,
             transitions=transitions,
-            initial=DoorEnum.UNLOCKED,
-            on_exception="raise_error",
+            initial=initial_state,
+            on_exception="on_invalid_attempt",
             send_event=True,
         )
 
@@ -47,14 +44,11 @@ class Door:
     def invalid_attemps(self):
         return self.__invalid_attemps
 
-    @property
-    def machine(self):
-        return self.__machine
-
     @invalid_attemps.setter
     def invalid_attemps(self, value):
         self.__invalid_attemps = value
 
-    def raise_error(self, event):
+    def on_invalid_attempt(self, event):
         self.invalid_attemps += 1
+        print(f"Invalid transition attempted. Attempts: {self.invalid_attemps}")
         raise MachineError(event.error)

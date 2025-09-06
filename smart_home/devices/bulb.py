@@ -1,17 +1,14 @@
-from dataclasses import dataclass
-
 from transitions import Machine
 
 from smart_home.utils.descriptors import BrightnessRange, ValidColor
 from smart_home.utils.enums import ColorEnum, SwitchEnum
 
 
-@dataclass
 class Bulb:
     __brightness = BrightnessRange()
     __current_color = ValidColor()
 
-    def __post_init__(self):
+    def __init__(self, initial_state: SwitchEnum = SwitchEnum.OFF):
         self.__brightness = 75
         self.__current_color = ColorEnum.NEUTRAL
 
@@ -31,20 +28,22 @@ class Bulb:
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
                 "conditions": "is_brightness_in_range",
+                "after": "_update_brightness",
             },
             {
                 "trigger": "set_color",
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
                 "conditions": "is_valid_color",
+                "after": "_update_color",
             },
         ]
 
-        self.__machine = Machine(
+        self.machine = Machine(
             self,
             states=SwitchEnum,
             transitions=transitions,
-            initial=SwitchEnum.OFF,
+            initial=initial_state,
         )
 
     @property
@@ -64,17 +63,13 @@ class Bulb:
         self.__current_color = value
 
     def is_brightness_in_range(self, brightness_value):
-        try:
-            self.brightness = brightness_value
-            return True
-        except ValueError as e:
-            print(f"Error - {e}")
-            return False
+        return 0 <= brightness_value <= 100
 
     def is_valid_color(self, color):
-        try:
-            self.current_color = color
-            return True
-        except ValueError as e:
-            print(f"Error - {e}")
-            return False
+        return isinstance(color, ColorEnum)
+
+    def _update_brightness(self, brightness_value):
+        self.brightness = brightness_value
+
+    def _update_color(self, color):
+        self.current_color = color

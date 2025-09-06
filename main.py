@@ -1,5 +1,6 @@
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.door import Door
+from smart_home.devices.outlet import Outlet
 from smart_home.utils.enums import ColorEnum
 
 if __name__ == "__main__":
@@ -15,6 +16,8 @@ if __name__ == "__main__":
     print(d.state)
     d.close()
     print(d.state)
+    d.lock()
+    print(d.state)
 
     print("___BULB___")
     b = Bulb()
@@ -25,5 +28,17 @@ if __name__ == "__main__":
     b.set_brightness(brightness_value=100)
     print(b.state, b.brightness, b.current_color)
     print(b.state, b.brightness, b.current_color)
-    b.set_color(ColorEnum.WARM)
+    b.set_color(color=ColorEnum.WARM)
     print(b.state, b.brightness, b.current_color)
+
+    print("___OUTLET___")
+    outlet = Outlet()
+    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    outlet.turn_on()
+    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    outlet.turn_off()
+    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    outlet.turn_on()
+    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    outlet.turn_off()
+    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
