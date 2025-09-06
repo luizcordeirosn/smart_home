@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from smart_home.utils.enums import ColorEnum
+from smart_home.core.enums import ColorEnum
 
 
 class ValidatorDescriptor(ABC):

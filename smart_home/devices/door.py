@@ -1,7 +1,7 @@
 from transitions import Machine
 from transitions.core import MachineError
 
-from smart_home.utils.enums import DoorEnum
+from smart_home.core.enums import DoorEnum
 
 
 class Door:

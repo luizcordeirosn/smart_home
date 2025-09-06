@@ -2,15 +2,15 @@ from datetime import datetime
 
 from transitions import Machine
 
-from smart_home.utils.descriptors import PositiveValue
-from smart_home.utils.enums import SprinklerState
+from smart_home.core.descriptors import PositiveValue
+from smart_home.core.enums import SprinklerEnum
 
 
 class Sprinkler:
     __flow_rate = PositiveValue()
 
     def __init__(
-        self, initial_state: SprinklerState = SprinklerState.IDLE, flow_rate: int = 15
+        self, initial_state: SprinklerEnum = SprinklerEnum.IDLE, flow_rate: int = 15
     ):
         self.flow_rate = flow_rate
         self.__usage_lh = 0
@@ -19,29 +19,29 @@ class Sprinkler:
         transitions = [
             {
                 "trigger": "turn_on",
-                "source": SprinklerState.IDLE,
-                "dest": SprinklerState.WATERING,
+                "source": SprinklerEnum.IDLE,
+                "dest": SprinklerEnum.WATERING,
             },
             {
                 "trigger": "pause_watering",
-                "source": SprinklerState.WATERING,
-                "dest": SprinklerState.PAUSED,
+                "source": SprinklerEnum.WATERING,
+                "dest": SprinklerEnum.PAUSED,
             },
             {
                 "trigger": "resume_watering",
-                "source": SprinklerState.PAUSED,
-                "dest": SprinklerState.WATERING,
+                "source": SprinklerEnum.PAUSED,
+                "dest": SprinklerEnum.WATERING,
             },
             {
                 "trigger": "stop_watering",
-                "source": [SprinklerState.WATERING, SprinklerState.PAUSED],
-                "dest": SprinklerState.IDLE,
+                "source": [SprinklerEnum.WATERING, SprinklerEnum.PAUSED],
+                "dest": SprinklerEnum.IDLE,
             },
         ]
 
         self.machine = Machine(
             model=self,
-            states=SprinklerState,
+            states=SprinklerEnum,
             transitions=transitions,
             initial=initial_state,
         )

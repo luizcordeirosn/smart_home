@@ -28,7 +28,14 @@ class ColorEnum(Enum):
         return f"{self.name}"
 
 
-class SprinklerState(Enum):
+class SprinklerEnum(Enum):
     IDLE = auto()
     WATERING = auto()
     PAUSED = auto()
+
+
+class ThermostatEnum(Enum):
+    OFF = auto()
+    IDLE = auto()
+    HEATING = auto()
+    COOLING = auto()

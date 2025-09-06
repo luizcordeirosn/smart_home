@@ -2,8 +2,8 @@ from datetime import datetime
 
 from transitions import Machine
 
-from smart_home.utils.descriptors import PositiveValue
-from smart_home.utils.enums import SwitchEnum
+from smart_home.core.descriptors import PositiveValue
+from smart_home.core.enums import SwitchEnum
 
 
 class Outlet:

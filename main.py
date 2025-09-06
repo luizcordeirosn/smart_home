@@ -1,8 +1,9 @@
+from smart_home.core.enums import ColorEnum
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.door import Door
 from smart_home.devices.outlet import Outlet
 from smart_home.devices.sprinkler import Sprinkler
-from smart_home.utils.enums import ColorEnum
+from smart_home.devices.thermostat import Thermostat
 
 if __name__ == "__main__":
     print("___DOOR___")
@@ -80,3 +81,16 @@ if __name__ == "__main__":
         sprinkler.start_usage_time,
         sprinkler.usage_lh,
     )
+
+    print("___THERMOSTAT___")
+    thermostat = Thermostat()
+
+    print(thermostat.state, thermostat.current_temperature)
+    thermostat.turn_on(target_temperature=25)
+    print(thermostat.state, thermostat.current_temperature)
+    thermostat.check_temperature(target_temperature=25.5)
+    print(thermostat.state, thermostat.current_temperature)
+    thermostat.check_temperature(target_temperature=20.5)
+    print(thermostat.state, thermostat.current_temperature)
+    thermostat.check_temperature(target_temperature=21.5)
+    print(thermostat.state, thermostat.current_temperature)

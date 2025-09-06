@@ -1,7 +1,7 @@
 from transitions import Machine
 
-from smart_home.utils.descriptors import BrightnessRange, ValidColor
-from smart_home.utils.enums import ColorEnum, SwitchEnum
+from smart_home.core.descriptors import BrightnessRange, ValidColor
+from smart_home.core.enums import ColorEnum, SwitchEnum
 
 
 class Bulb:
@@ -70,6 +70,8 @@ class Bulb:
 
     def update_brightness(self, brightness_value):
         self.brightness = brightness_value
+        print(f"INFO: Brightness updated to {self.brightness}%.")
 
     def update_color(self, color):
         self.current_color = color
+        print(f"INFO: Color changed to {self.current_color}")
