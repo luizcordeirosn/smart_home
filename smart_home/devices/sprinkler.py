@@ -3,7 +3,7 @@ from datetime import datetime
 from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
-from smart_home.core.enums import SprinklerStateEnum
+from smart_home.core.enums import EventType, SprinklerStateEnum
 from smart_home.devices.device import Device
 
 
@@ -87,7 +87,7 @@ class Sprinkler(Device):
 
         self.usage_lh += session_consumption
 
-        self.event_data["type"] = "SPRINKLER_ON_EXIT_WATERING"
+        self.event_data["type"] = EventType.SPRINKLER_ON_EXIT_WATERING
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
         self.event_data["usage_lh"] = self.usage_lh

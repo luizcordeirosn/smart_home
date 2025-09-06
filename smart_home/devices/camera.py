@@ -55,16 +55,16 @@ class Camera(Device):
         self.__memory_mb = value
 
     def has_enough_memory(self, event):
-        self.event_data["type"] = "CAMERA_HAS_ENOUGH_MEMORY"
+        self.event_data["type"] = EventType.CAMERA_HAS_ENOUGH_MEMORY
         self.event_data["memory_mb"] = self.memory_mb
 
         return self.memory_mb >= 50
 
     def on_enter_RECORDING(self, event):
-        self.event_data["type"] = "CAMERA_ON_ENTER_RECORDING"
+        self.event_data["type"] = EventType.CAMERA_ON_ENTER_RECORDING
 
     def on_exit_RECORDING(self, event):
         self.memory_mb -= 50
 
-        self.event_data["type"] = "CAMERA_ON_EXIT_RECORDING"
+        self.event_data["type"] = EventType.CAMERA_ON_EXIT_RECORDING
         self.event_data["memory_mb"] = self.memory_mb

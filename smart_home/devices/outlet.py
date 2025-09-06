@@ -3,7 +3,7 @@ from datetime import datetime
 from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
-from smart_home.core.enums import SwitchEnum
+from smart_home.core.enums import EventType, SwitchEnum
 from smart_home.devices.device import Device
 
 
@@ -73,7 +73,7 @@ class Outlet(Device):
 
         self.usage_wh += session_consumption
 
-        self.event_data["type"] = "OUTLET_ON_ENTER_OFF"
+        self.event_data["type"] = EventType.OUTLET_ON_ENTER_OFF
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
         self.event_data["usage_wh"] = self.usage_wh

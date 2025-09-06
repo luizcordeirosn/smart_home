@@ -1,6 +1,6 @@
 from transitions import Machine
 
-from smart_home.core.enums import ThermostatStateEnum
+from smart_home.core.enums import EventType, ThermostatStateEnum
 from smart_home.devices.device import Device
 
 
@@ -78,15 +78,15 @@ class Thermostat(Device):
     def on_enter_IDLE(self, event):
         self.current_temperature = event.kwargs.get("target_temperature")
 
-        self.event_data["type"] = "THERMOSTAT_ON_ENTER_IDLE"
-        self.event_data["current_temparture"] = self.current_temperature
+        self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_IDLE
+        self.event_data["current_temperature"] = self.current_temperature
 
     def on_enter_COOLING(self, event):
         target_temperature = event.kwargs.get("target_temperature")
 
         self.current_temperature = target_temperature
 
-        self.event_data["type"] = "THERMOSTAT_ON_ENTER_COOLING"
+        self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_COOLING
         self.event_data["target_temperature"] = target_temperature
 
     def on_enter_HEATING(self, event):
@@ -94,10 +94,10 @@ class Thermostat(Device):
 
         self.current_temperature = target_temperature
 
-        self.event_data["type"] = "THERMOSTAT_ON_ENTER_HEATING"
+        self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_HEATING
         self.event_data["target_temperature"] = target_temperature
 
     def on_enter_OFF(self):
         self.current_temperature = 0
 
-        self.event_data["type"] = "THERMOSTAT_ON_ENTER_OFF"
+        self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_OFF

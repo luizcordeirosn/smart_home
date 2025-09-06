@@ -1,7 +1,7 @@
 from transitions import Machine
 
 from smart_home.core.descriptors import BrightnessRange, ValidColor
-from smart_home.core.enums import ColorEnum, SwitchEnum
+from smart_home.core.enums import ColorEnum, EventType, SwitchEnum
 from smart_home.devices.device import Device
 
 
@@ -76,11 +76,11 @@ class Bulb(Device):
     def update_brightness(self, event):
         self.brightness = event.kwargs.get("brightness_value")
 
-        self.event_data["type"] = "BULB_UPDATE_BRIGHTNESS"
+        self.event_data["type"] = EventType.BULB_UPDATE_BRIGHTNESS
         self.event_data["brightness"] = self.brightness
 
     def update_color(self, event):
         self.current_color = event.kwargs.get("color")
 
-        self.event_data["type"] = "BULB_UPDATE_COLOR"
+        self.event_data["type"] = EventType.BULB_UPDATE_COLOR
         self.event_data["current_color"] = self.current_color
