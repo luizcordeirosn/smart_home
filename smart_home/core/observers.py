@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+from smart_home.core.enums import EventType
+
 
 class Observer(ABC):
     @abstractmethod
@@ -30,7 +32,7 @@ class LoggingObserver(Observer):
         print(log_message)
 
         event_type = kwargs.get("type")
-        if event_type == "DOOR_ON_INVALID_ATTEMPT":
+        if event_type == EventType.DOOR_ON_INVALID_ATTEMPT:
             invalid_attempts = kwargs.get("invalid_attempts")
             machine_error = kwargs.get("machine_error")
 
@@ -42,7 +44,7 @@ class LoggingObserver(Observer):
 
             print(log_message)
 
-        elif event_type == "BULB_UPDATE_BRIGHTNESS":
+        elif event_type == EventType.BULB_UPDATE_BRIGHTNESS:
             brightness = kwargs.get("brightness")
 
             log_message = (
@@ -51,14 +53,14 @@ class LoggingObserver(Observer):
 
             print(log_message)
 
-        elif event_type == "BULB_UPDATE_COLOR":
+        elif event_type == EventType.BULB_UPDATE_COLOR:
             current_color = kwargs.get("current_color")
 
             log_message = f"INFO [{device_instance}]: Color changed to {current_color}"
 
             print(log_message)
 
-        elif event_type == "OUTLET_ON_ENTER_OFF":
+        elif event_type == EventType.OUTLET_ON_ENTER_OFF:
             usage_time = kwargs.get("usage_time")
             session_consumption = kwargs.get("session_consumption")
             usage_wh = kwargs.get("usage_wh")
@@ -72,7 +74,7 @@ class LoggingObserver(Observer):
 
             print(log_message)
 
-        elif event_type == "SPRINKLER_ON_EXIT_WATERING":
+        elif event_type == EventType.SPRINKLER_ON_EXIT_WATERING:
             usage_time = kwargs.get("usage_time")
             session_consumption = kwargs.get("session_consumption")
             usage_lh = kwargs.get("usage_lh")
@@ -86,7 +88,7 @@ class LoggingObserver(Observer):
 
             print(log_message)
 
-        elif event_type == "THERMOSTAT_ON_ENTER_IDLE":
+        elif event_type == EventType.THERMOSTAT_ON_ENTER_IDLE:
             current_temperature = kwargs.get("current_temperature")
 
             log_message = f"INFO [{device_instance}]: Current temperature is {current_temperature}"
@@ -94,14 +96,14 @@ class LoggingObserver(Observer):
             print(log_message)
 
         elif (
-            event_type == "THERMOSTAT_ON_ENTER_COOLING"
-            or event_type == "THERMOSTAT_ON_ENTER_HEATING"
+            event_type == EventType.THERMOSTAT_ON_ENTER_COOLING
+            or event_type == EventType.THERMOSTAT_ON_ENTER_HEATING
         ):
             target_temperature = kwargs.get("target_temperature")
 
             is_decreasing = (
                 "Decreasing"
-                if event_type == "THERMOSTAT_ON_ENTER_COOLING"
+                if event_type == EventType.THERMOSTAT_ON_ENTER_COOLING
                 else "Increasing"
             )
 
@@ -109,7 +111,27 @@ class LoggingObserver(Observer):
 
             print(log_message)
 
-        elif event_type == "THERMOSTAT_ON_ENTER_OFF":
+        elif event_type == EventType.THERMOSTAT_ON_ENTER_OFF:
             log_message = f"INFO [{device_instance}]: Thermostat turned off"
+
+            print(log_message)
+
+        elif event_type == EventType.CAMERA_HAS_ENOUGH_MEMORY:
+            memory_mb = kwargs.get("memory_mb")
+
+            log_message = f"WARNING [{device_instance}]: Checking memory... Available: {memory_mb}MB, Required: 50MB"
+
+            print(log_message)
+
+        elif event_type == EventType.CAMERA_ON_ENTER_RECORDING:
+            print(f"INFO [{device_instance}]: Camera is now recording")
+
+        elif event_type == EventType.CAMERA_ON_EXIT_RECORDING:
+            memory_mb = kwargs.get("memory_mb")
+
+            log_message = (
+                f"INFO [{device_instance}]: Recording stopped successfully.\n"
+                f"    - Remaining space: {memory_mb} MB"
+            )
 
             print(log_message)

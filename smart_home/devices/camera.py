@@ -1,10 +1,11 @@
 from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
-from smart_home.core.enums import CameraStateEnum
+from smart_home.core.enums import CameraStateEnum, EventType
+from smart_home.devices.device import Device
 
 
-class Camera:
+class Camera(Device):
     __memory_mb = PositiveValue()
 
     def __init__(self, initial_state=CameraStateEnum.OFF, memory_mb=2000):
@@ -20,7 +21,7 @@ class Camera:
                 "trigger": "record",
                 "source": CameraStateEnum.IDLE,
                 "dest": CameraStateEnum.RECORDING,
-                "conditions": "has_enought_memory",
+                "conditions": "has_enough_memory",
             },
             {
                 "trigger": "stop_recording",
@@ -35,8 +36,15 @@ class Camera:
         ]
 
         self.machine = Machine(
-            self, states=CameraStateEnum, transitions=transitions, initial=initial_state
+            self,
+            states=CameraStateEnum,
+            transitions=transitions,
+            initial=initial_state,
+            send_event=True,
+            after_state_change="set_current_event",
         )
+
+        super().__init__()
 
     @property
     def memory_mb(self):
@@ -46,22 +54,17 @@ class Camera:
     def memory_mb(self, value):
         self.__memory_mb = value
 
-    def has_enought_memory(self):
-        print(
-            f"DEBUG: Checking memory... Available: {self.memory_mb}MB, Required: 50MB"
-        )
+    def has_enough_memory(self, event):
+        self.event_data["type"] = "CAMERA_HAS_ENOUGH_MEMORY"
+        self.event_data["memory_mb"] = self.memory_mb
+
         return self.memory_mb >= 50
 
-    def is_low_on_memory(self):
-        is_low = self.memory_mb < 50
-        print(f"Checking memory ({self.memory_mb}MB)... Is memory low? {is_low}")
+    def on_enter_RECORDING(self, event):
+        self.event_data["type"] = "CAMERA_ON_ENTER_RECORDING"
 
-        return is_low
-
-    def on_enter_RECORDING(self):
-        print("INFO: Camera is now recording")
-
-    def on_exit_RECORDING(self):
+    def on_exit_RECORDING(self, event):
         self.memory_mb -= 50
-        print("INFO: Recording stopped successfully.")
-        print(f"    - Remaining space: {self.memory_mb} MB")
+
+        self.event_data["type"] = "CAMERA_ON_EXIT_RECORDING"
+        self.event_data["memory_mb"] = self.memory_mb

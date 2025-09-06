@@ -19,6 +19,7 @@ if __name__ == "__main__":
     outlet = Outlet()
     sprinkler = Sprinkler()
     thermostat = Thermostat()
+    camera = Camera(memory_mb=2000)
 
     smart_home.add_observer(logging)
     smart_home.add_devices("door", door)
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     smart_home.add_devices("outlet", outlet)
     smart_home.add_devices("sprinkler", sprinkler)
     smart_home.add_devices("thermostat", thermostat)
+    smart_home.add_devices("camera", camera)
 
     print("___DOOR___")
     print(
@@ -211,11 +213,25 @@ if __name__ == "__main__":
     )
 
     print("__CAMERA__")
-    camera = Camera(memory_mb=2000)
-    print(camera.state, camera.memory_mb)
-    camera.turn_on()
-    print(camera.state, camera.memory_mb)
-    camera.record()
-    print(camera.state, camera.memory_mb)
-    camera.stop_recording()
-    print(camera.state, camera.memory_mb)
+    print(
+        smart_home.devices["camera"][0].state,
+        smart_home.devices["camera"][0].memory_mb,
+    )
+    smart_home.devices["camera"][0].turn_on()
+    smart_home.publish_event(**smart_home.devices["camera"][0].event_data)
+    print(
+        smart_home.devices["camera"][0].state,
+        smart_home.devices["camera"][0].memory_mb,
+    )
+    smart_home.devices["camera"][0].record()
+    smart_home.publish_event(**smart_home.devices["camera"][0].event_data)
+    print(
+        smart_home.devices["camera"][0].state,
+        smart_home.devices["camera"][0].memory_mb,
+    )
+    smart_home.devices["camera"][0].stop_recording()
+    smart_home.publish_event(**smart_home.devices["camera"][0].event_data)
+    print(
+        smart_home.devices["camera"][0].state,
+        smart_home.devices["camera"][0].memory_mb,
+    )
