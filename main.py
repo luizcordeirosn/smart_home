@@ -14,12 +14,14 @@ if __name__ == "__main__":
     smart_home = Hub()
     logging = LoggingObserver()
 
-    sprinkler = Sprinkler()
     door = Door()
+    bulb = Bulb()
+    sprinkler = Sprinkler()
 
     smart_home.add_observer(logging)
     smart_home.add_devices("sprinkler", sprinkler)
     smart_home.add_devices("door", door)
+    smart_home.add_devices("bulb", bulb)
 
     print("___DOOR___")
     print(
@@ -67,16 +69,32 @@ if __name__ == "__main__":
     )
 
     print("___BULB___")
-    b = Bulb()
-
-    print(b.state)
-    b.turn_on()
-    print(b.state, b.brightness, b.current_color)
-    b.set_brightness(brightness_value=100)
-    print(b.state, b.brightness, b.current_color)
-    print(b.state, b.brightness, b.current_color)
-    b.set_color(color=ColorEnum.WARM)
-    print(b.state, b.brightness, b.current_color)
+    print(
+        smart_home.devices["bulb"][0].state,
+        smart_home.devices["bulb"][0].brightness,
+        smart_home.devices["bulb"][0].current_color,
+    )
+    smart_home.devices["bulb"][0].turn_on()
+    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    print(
+        smart_home.devices["bulb"][0].state,
+        smart_home.devices["bulb"][0].brightness,
+        smart_home.devices["bulb"][0].current_color,
+    )
+    smart_home.devices["bulb"][0].set_brightness(brightness_value=100)
+    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    print(
+        smart_home.devices["bulb"][0].state,
+        smart_home.devices["bulb"][0].brightness,
+        smart_home.devices["bulb"][0].current_color,
+    )
+    smart_home.devices["bulb"][0].set_color(color=ColorEnum.WARM)
+    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    print(
+        smart_home.devices["bulb"][0].state,
+        smart_home.devices["bulb"][0].brightness,
+        smart_home.devices["bulb"][0].current_color,
+    )
 
     print("___OUTLET___")
     outlet = Outlet()

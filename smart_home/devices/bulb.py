@@ -2,9 +2,10 @@ from transitions import Machine
 
 from smart_home.core.descriptors import BrightnessRange, ValidColor
 from smart_home.core.enums import ColorEnum, SwitchEnum
+from smart_home.devices.device import Device
 
 
-class Bulb:
+class Bulb(Device):
     __brightness = BrightnessRange()
     __current_color = ValidColor()
 
@@ -44,7 +45,11 @@ class Bulb:
             states=SwitchEnum,
             transitions=transitions,
             initial=initial_state,
+            send_event=True,
+            after_state_change="set_current_event",
         )
+
+        super().__init__()
 
     @property
     def brightness(self):
@@ -62,16 +67,20 @@ class Bulb:
     def current_color(self, value):
         self.__current_color = value
 
-    def is_brightness_in_range(self, brightness_value):
-        return 0 <= brightness_value <= 100
+    def is_brightness_in_range(self, event):
+        return 0 <= event.kwargs.get("brightness_value") <= 100
 
-    def is_valid_color(self, color):
-        return isinstance(color, ColorEnum)
+    def is_valid_color(self, event):
+        return isinstance(event.kwargs.get("color"), ColorEnum)
 
-    def update_brightness(self, brightness_value):
-        self.brightness = brightness_value
-        print(f"INFO: Brightness updated to {self.brightness}%.")
+    def update_brightness(self, event):
+        self.brightness = event.kwargs.get("brightness_value")
 
-    def update_color(self, color):
-        self.current_color = color
-        print(f"INFO: Color changed to {self.current_color}")
+        self.event_data["type"] = "BULB_UPDATE_BRIGHTNESS"
+        self.event_data["brightness"] = self.brightness
+
+    def update_color(self, event):
+        self.current_color = event.kwargs.get("color")
+
+        self.event_data["type"] = "BULB_UPDATE_COLOR"
+        self.event_data["current_color"] = self.current_color

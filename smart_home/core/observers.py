@@ -59,3 +59,17 @@ class LoggingObserver(Observer):
             )
 
             print(log_message)
+
+        elif event_type == "BULB_UPDATE_BRIGHTNESS":
+            brightness = event_data.get("brightness")
+
+            log_message = f"INFO: Brightness updated to {brightness}%."
+
+            print(log_message)
+
+        elif event_type == "BULB_UPDATE_COLOR":
+            current_color = event_data.get("current_color")
+
+            log_message = f"INFO: Color changed to {current_color}"
+
+            print(log_message)
