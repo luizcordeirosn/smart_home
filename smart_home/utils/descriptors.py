@@ -33,10 +33,10 @@ class ValidColor(ValidatorDescriptor):
         setattr(obj, self.private_name, value)
 
 
-class PositivePower(ValidatorDescriptor):
+class PositiveValue(ValidatorDescriptor):
     def __set__(self, obj, value):
         if not isinstance(value, int):
-            raise ValueError("Power value must be an int type")
+            raise ValueError("Value must be an int type")
         if value < 0:
-            raise ValueError("Power value must be positive or 0")
+            raise ValueError("Value must be positive or 0")
         setattr(obj, self.private_name, value)

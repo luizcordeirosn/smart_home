@@ -1,6 +1,7 @@
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.door import Door
 from smart_home.devices.outlet import Outlet
+from smart_home.devices.sprinkler import Sprinkler
 from smart_home.utils.enums import ColorEnum
 
 if __name__ == "__main__":
@@ -33,12 +34,49 @@ if __name__ == "__main__":
 
     print("___OUTLET___")
     outlet = Outlet()
-    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
     outlet.turn_on()
-    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
     outlet.turn_off()
-    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
     outlet.turn_on()
-    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
     outlet.turn_off()
-    print(outlet.state, outlet.power_w, outlet.usage_start_time, outlet.usage_wh)
+    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
+
+    print("___SPRINKLER___")
+    sprinkler = Sprinkler()
+    print(
+        sprinkler.state,
+        sprinkler.flow_rate,
+        sprinkler.start_usage_time,
+        sprinkler.usage_lh,
+    )
+    sprinkler.turn_on()
+    print(
+        sprinkler.state,
+        sprinkler.flow_rate,
+        sprinkler.start_usage_time,
+        sprinkler.usage_lh,
+    )
+    sprinkler.pause_watering()
+    print(
+        sprinkler.state,
+        sprinkler.flow_rate,
+        sprinkler.start_usage_time,
+        sprinkler.usage_lh,
+    )
+    sprinkler.resume_watering()
+    print(
+        sprinkler.state,
+        sprinkler.flow_rate,
+        sprinkler.start_usage_time,
+        sprinkler.usage_lh,
+    )
+    sprinkler.stop_watering()
+    print(
+        sprinkler.state,
+        sprinkler.flow_rate,
+        sprinkler.start_usage_time,
+        sprinkler.usage_lh,
+    )

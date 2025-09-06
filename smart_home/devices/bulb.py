@@ -28,14 +28,14 @@ class Bulb:
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
                 "conditions": "is_brightness_in_range",
-                "after": "_update_brightness",
+                "after": "update_brightness",
             },
             {
                 "trigger": "set_color",
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
                 "conditions": "is_valid_color",
-                "after": "_update_color",
+                "after": "update_color",
             },
         ]
 
@@ -68,8 +68,8 @@ class Bulb:
     def is_valid_color(self, color):
         return isinstance(color, ColorEnum)
 
-    def _update_brightness(self, brightness_value):
+    def update_brightness(self, brightness_value):
         self.brightness = brightness_value
 
-    def _update_color(self, color):
+    def update_color(self, color):
         self.current_color = color

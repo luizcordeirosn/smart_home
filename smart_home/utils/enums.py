@@ -1,28 +1,34 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class DoorEnum(Enum):
-    LOCKED = 1
-    UNLOCKED = 2
-    OPENED = 3
+    LOCKED = auto()
+    UNLOCKED = auto()
+    OPENED = auto()
 
     def __str__(self):
         return f"{self.name}"
 
 
 class SwitchEnum(Enum):
-    OFF = 1
-    ON = 2
+    OFF = auto()
+    ON = auto()
 
     def __str__(self):
         return f"{self.name}"
 
 
 class ColorEnum(Enum):
-    WARM = 1
-    COOL = 2
-    NEUTRAL = 3
-    DAYLIGHT = 4
+    WARM = auto()
+    COOL = auto()
+    NEUTRAL = auto()
+    DAYLIGHT = auto()
 
     def __str__(self):
         return f"{self.name}"
+
+
+class SprinklerState(Enum):
+    IDLE = auto()
+    WATERING = auto()
+    PAUSED = auto()
