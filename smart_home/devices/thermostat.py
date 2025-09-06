@@ -1,9 +1,10 @@
 from transitions import Machine
 
 from smart_home.core.enums import ThermostatStateEnum
+from smart_home.devices.device import Device
 
 
-class Thermostat:
+class Thermostat(Device):
     def __init__(self, initial_state=ThermostatStateEnum.OFF):
         self.__current_temperature = 0.0
 
@@ -51,7 +52,11 @@ class Thermostat:
             states=ThermostatStateEnum,
             transitions=transitions,
             initial=initial_state,
+            send_event=True,
+            after_state_change="set_current_event",
         )
+
+        super().__init__()
 
     @property
     def current_temperature(self):
@@ -61,27 +66,38 @@ class Thermostat:
     def current_temperature(self, value):
         self.__current_temperature = value
 
-    def is_too_cold(self, target_temperature: float):
-        return self.current_temperature < target_temperature
+    def is_too_cold(self, event):
+        return self.current_temperature < event.kwargs.get("target_temperature")
 
-    def is_too_hot(self, target_temperature: float):
-        return self.current_temperature > target_temperature
+    def is_too_hot(self, event):
+        return self.current_temperature > event.kwargs.get("target_temperature")
 
-    def is_temperature_ok(self, target_temperature: float):
-        return self.current_temperature == target_temperature
+    def is_temperature_ok(self, event):
+        return self.current_temperature == event.kwargs.get("target_temperature")
 
-    def on_enter_IDLE(self, target_temperature: float):
+    def on_enter_IDLE(self, event):
+        self.current_temperature = event.kwargs.get("target_temperature")
+
+        self.event_data["type"] = "THERMOSTAT_ON_ENTER_IDLE"
+        self.event_data["current_temparture"] = self.current_temperature
+
+    def on_enter_COOLING(self, event):
+        target_temperature = event.kwargs.get("target_temperature")
+
         self.current_temperature = target_temperature
-        print(f"INFO: Current temperature is {self.current_temperature}")
 
-    def on_enter_COOLING(self, target_temperature: float):
-        self.current_temperature = target_temperature
-        print(f"INFO: Decreasing temperature to {target_temperature}")
+        self.event_data["type"] = "THERMOSTAT_ON_ENTER_COOLING"
+        self.event_data["target_temperature"] = target_temperature
 
-    def on_enter_HEATING(self, target_temperature: float):
+    def on_enter_HEATING(self, event):
+        target_temperature = event.kwargs.get("target_temperature")
+
         self.current_temperature = target_temperature
-        print(f"INFO: Increasing temperature to {target_temperature}")
+
+        self.event_data["type"] = "THERMOSTAT_ON_ENTER_HEATING"
+        self.event_data["target_temperature"] = target_temperature
 
     def on_enter_OFF(self):
         self.current_temperature = 0
-        print("INFO: Thermostat turned off")
+
+        self.event_data["type"] = "THERMOSTAT_ON_ENTER_OFF"

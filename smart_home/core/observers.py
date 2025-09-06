@@ -85,3 +85,31 @@ class LoggingObserver(Observer):
             )
 
             print(log_message)
+
+        elif event_type == "THERMOSTAT_ON_ENTER_IDLE":
+            current_temperature = kwargs.get("current_temperature")
+
+            log_message = f"INFO [{device_instance}]: Current temperature is {current_temperature}"
+
+            print(log_message)
+
+        elif (
+            event_type == "THERMOSTAT_ON_ENTER_COOLING"
+            or event_type == "THERMOSTAT_ON_ENTER_HEATING"
+        ):
+            target_temperature = kwargs.get("target_temperature")
+
+            is_decreasing = (
+                "Decreasing"
+                if event_type == "THERMOSTAT_ON_ENTER_COOLING"
+                else "Increasing"
+            )
+
+            log_message = f"INFO [{device_instance}]: {is_decreasing} temperature to {target_temperature}"
+
+            print(log_message)
+
+        elif event_type == "THERMOSTAT_ON_ENTER_OFF":
+            log_message = f"INFO [{device_instance}]: Thermostat turned off"
+
+            print(log_message)

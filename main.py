@@ -18,12 +18,14 @@ if __name__ == "__main__":
     bulb = Bulb()
     outlet = Outlet()
     sprinkler = Sprinkler()
+    thermostat = Thermostat()
 
     smart_home.add_observer(logging)
     smart_home.add_devices("door", door)
     smart_home.add_devices("bulb", bulb)
     smart_home.add_devices("outlet", outlet)
     smart_home.add_devices("sprinkler", sprinkler)
+    smart_home.add_devices("thermostat", thermostat)
 
     print("___DOOR___")
     print(
@@ -179,17 +181,34 @@ if __name__ == "__main__":
     )
 
     print("___THERMOSTAT___")
-    thermostat = Thermostat()
-
-    print(thermostat.state, thermostat.current_temperature)
-    thermostat.turn_on(target_temperature=25)
-    print(thermostat.state, thermostat.current_temperature)
-    thermostat.check_temperature(target_temperature=25.5)
-    print(thermostat.state, thermostat.current_temperature)
-    thermostat.check_temperature(target_temperature=20.5)
-    print(thermostat.state, thermostat.current_temperature)
-    thermostat.check_temperature(target_temperature=21.5)
-    print(thermostat.state, thermostat.current_temperature)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
+    smart_home.devices["thermostat"][0].turn_on(target_temperature=25)
+    smart_home.publish_event(**smart_home.devices["thermostat"][0].event_data)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
+    smart_home.devices["thermostat"][0].check_temperature(target_temperature=25.5)
+    smart_home.publish_event(**smart_home.devices["thermostat"][0].event_data)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
+    smart_home.devices["thermostat"][0].check_temperature(target_temperature=20.5)
+    smart_home.publish_event(**smart_home.devices["thermostat"][0].event_data)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
+    smart_home.devices["thermostat"][0].check_temperature(target_temperature=21.5)
+    smart_home.publish_event(**smart_home.devices["thermostat"][0].event_data)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
 
     print("__CAMERA__")
     camera = Camera(memory_mb=2000)
