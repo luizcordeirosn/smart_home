@@ -13,6 +13,6 @@ class Device(ABC):
     def event_data(self, value):
         self.__event_data = value
 
-    def after_state_change(self, event):
+    def set_current_event(self, event):
         self.event_data["event"] = event
         self.event_data["device_instance"] = self.__class__.__name__

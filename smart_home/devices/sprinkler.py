@@ -48,7 +48,7 @@ class Sprinkler(Device):
             transitions=transitions,
             initial=initial_state,
             send_event=True,
-            after_state_change="after_state_change",
+            after_state_change="set_current_event",
         )
 
         super().__init__()
@@ -87,9 +87,7 @@ class Sprinkler(Device):
 
         self.usage_lh += session_consumption
 
-        self.event_data = {
-            "type": "SPRINKLER_ON_EXIT_WATERING",
-            "usage_time": usage_time,
-            "session_consumption": session_consumption,
-            "usage_lh": self.usage_lh,
-        }
+        self.event_data["type"] = "SPRINKLER_ON_EXIT_WATERING"
+        self.event_data["usage_time"] = usage_time
+        self.event_data["session_consumption"] = session_consumption
+        self.event_data["usage_lh"] = self.usage_lh

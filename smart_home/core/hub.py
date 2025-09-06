@@ -15,9 +15,9 @@ class Subject(ABC):
     def remove_observer(self, observer):
         self.observers.remove(observer)
 
-    def notify_event(self, *args, **kwargs):
+    def notify_event(self, **kwargs):
         for obs in self.observers:
-            obs.update(*args, **kwargs)
+            obs.update(**kwargs)
 
 
 class Hub(Subject):

@@ -13,25 +13,58 @@ if __name__ == "__main__":
 
     smart_home = Hub()
     logging = LoggingObserver()
+
     sprinkler = Sprinkler()
+    door = Door()
 
     smart_home.add_observer(logging)
     smart_home.add_devices("sprinkler", sprinkler)
+    smart_home.add_devices("door", door)
 
     print("___DOOR___")
-    d = Door()
-
-    print(d.state)
-    d.lock()
-    print(d.state)
-    d.unlock()
-    print(d.state)
-    d.open()
-    print(d.state)
-    d.close()
-    print(d.state)
-    d.lock()
-    print(d.state)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    smart_home.devices["door"][0].lock()
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    smart_home.devices["door"][0].unlock()
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    smart_home.devices["door"][0].open()
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    smart_home.devices["door"][0].close()
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    smart_home.devices["door"][0].lock()
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
+    try:
+        smart_home.devices["door"][0].open()
+    except Exception:
+        pass
+    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    print(
+        smart_home.devices["door"][0].state,
+        smart_home.devices["door"][0].invalid_attempts,
+    )
 
     print("___BULB___")
     b = Bulb()
