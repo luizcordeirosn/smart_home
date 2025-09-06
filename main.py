@@ -1,4 +1,6 @@
 from smart_home.core.enums import ColorEnum
+from smart_home.core.hub import Hub
+from smart_home.core.observers import LoggingObserver
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.camera import Camera
 from smart_home.devices.door import Door
@@ -7,6 +9,15 @@ from smart_home.devices.sprinkler import Sprinkler
 from smart_home.devices.thermostat import Thermostat
 
 if __name__ == "__main__":
+    print("__HUB__")
+
+    smart_home = Hub()
+    logging = LoggingObserver()
+    sprinkler = Sprinkler()
+
+    smart_home.add_observer(logging)
+    smart_home.add_devices("sprinkler", sprinkler)
+
     print("___DOOR___")
     d = Door()
 
@@ -46,41 +57,44 @@ if __name__ == "__main__":
     outlet.turn_off()
     print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
 
-    print("___SPRINKLER___")
-    sprinkler = Sprinkler()
+    print("__SPRINKLER__")
     print(
-        sprinkler.state,
-        sprinkler.flow_rate,
-        sprinkler.start_usage_time,
-        sprinkler.usage_lh,
+        smart_home.devices["sprinkler"][0].state,
+        smart_home.devices["sprinkler"][0].flow_rate,
+        smart_home.devices["sprinkler"][0].start_usage_time,
+        smart_home.devices["sprinkler"][0].usage_lh,
     )
-    sprinkler.turn_on()
+    smart_home.devices["sprinkler"][0].turn_on()
+    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
     print(
-        sprinkler.state,
-        sprinkler.flow_rate,
-        sprinkler.start_usage_time,
-        sprinkler.usage_lh,
+        smart_home.devices["sprinkler"][0].state,
+        smart_home.devices["sprinkler"][0].flow_rate,
+        smart_home.devices["sprinkler"][0].start_usage_time,
+        smart_home.devices["sprinkler"][0].usage_lh,
     )
-    sprinkler.pause_watering()
+    smart_home.devices["sprinkler"][0].pause_watering()
+    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
     print(
-        sprinkler.state,
-        sprinkler.flow_rate,
-        sprinkler.start_usage_time,
-        sprinkler.usage_lh,
+        smart_home.devices["sprinkler"][0].state,
+        smart_home.devices["sprinkler"][0].flow_rate,
+        smart_home.devices["sprinkler"][0].start_usage_time,
+        smart_home.devices["sprinkler"][0].usage_lh,
     )
-    sprinkler.resume_watering()
+    smart_home.devices["sprinkler"][0].resume_watering()
+    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
     print(
-        sprinkler.state,
-        sprinkler.flow_rate,
-        sprinkler.start_usage_time,
-        sprinkler.usage_lh,
+        smart_home.devices["sprinkler"][0].state,
+        smart_home.devices["sprinkler"][0].flow_rate,
+        smart_home.devices["sprinkler"][0].start_usage_time,
+        smart_home.devices["sprinkler"][0].usage_lh,
     )
-    sprinkler.stop_watering()
+    smart_home.devices["sprinkler"][0].stop_watering()
+    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
     print(
-        sprinkler.state,
-        sprinkler.flow_rate,
-        sprinkler.start_usage_time,
-        sprinkler.usage_lh,
+        smart_home.devices["sprinkler"][0].state,
+        smart_home.devices["sprinkler"][0].flow_rate,
+        smart_home.devices["sprinkler"][0].start_usage_time,
+        smart_home.devices["sprinkler"][0].usage_lh,
     )
 
     print("___THERMOSTAT___")

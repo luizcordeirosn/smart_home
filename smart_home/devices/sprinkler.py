@@ -4,9 +4,10 @@ from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
 from smart_home.core.enums import SprinklerStateEnum
+from smart_home.devices.device import Device
 
 
-class Sprinkler:
+class Sprinkler(Device):
     __flow_rate = PositiveValue()
 
     def __init__(
@@ -46,7 +47,11 @@ class Sprinkler:
             states=SprinklerStateEnum,
             transitions=transitions,
             initial=initial_state,
+            send_event=True,
+            after_state_change="after_state_change",
         )
+
+        super().__init__()
 
     @property
     def flow_rate(self):
@@ -72,16 +77,19 @@ class Sprinkler:
     def start_usage_time(self, value):
         self.__start_usage_time = value
 
-    def on_enter_WATERING(self):
+    def on_enter_WATERING(self, event):
         self.start_usage_time = datetime.now()
 
-    def on_exit_WATERING(self):
+    def on_exit_WATERING(self, event):
         usage_time = datetime.now() - self.start_usage_time
 
         session_consumption = (usage_time.total_seconds() / 3600) * self.flow_rate
 
         self.usage_lh += session_consumption
-        print("INFO: Sprinkler stopped watering. Logging usage details.")
-        print(f"    - Session duration: {usage_time}")
-        print(f"    - Session consumption: {session_consumption:.4f} Liters")
-        print(f"    - Total accumulated usage: {self.usage_lh:.4f} Liters")
+
+        self.event_data = {
+            "type": "SPRINKLER_ON_EXIT_WATERING",
+            "usage_time": usage_time,
+            "session_consumption": session_consumption,
+            "usage_lh": self.usage_lh,
+        }
