@@ -10,13 +10,11 @@ class Observer(ABC):
 
 class LoggingObserver(Observer):
     def update(self, **kwargs):
-        event_data = kwargs.get("event_data")
-
         timestamp = datetime.now()
-        device_instance = event_data.get("device_instance")
-        event = event_data.get("event")
+        device_instance = kwargs.get("device_instance")
+        event = kwargs.get("event")
         transition = event.transition
-        trigger = event_data.get("event").event.name
+        trigger = kwargs.get("event").event.name
 
         log_message = (
             f"LOG [{timestamp}] - Device: '{device_instance}', "
@@ -31,29 +29,13 @@ class LoggingObserver(Observer):
         # TODO: Trocar essa parte para salvar em um .json em vez de ser somente um print
         print(log_message)
 
-        event_type = event_data.get("type")
-        if event_type == "SPRINKLER_ON_EXIT_WATERING":
-            device_class = event_data.get("device_class")
-            usage_time = event_data.get("usage_time")
-            session_consumption = event_data.get("session_consumption")
-            usage_lh = event_data.get("usage_lh")
+        event_type = kwargs.get("type")
+        if event_type == "DOOR_ON_INVALID_ATTEMPT":
+            invalid_attempts = kwargs.get("invalid_attempts")
+            machine_error = kwargs.get("machine_error")
 
             log_message = (
-                f"INFO [{device_class}]: Sprinkler watering session finished.\n"
-                f"    - Session Duration: {usage_time}\n"
-                f"    - Session Consumption: {session_consumption:.4f} Liters\n"
-                f"    - Total Accumulated Usage: {usage_lh:.4f} Liters"
-            )
-
-            print(log_message)
-
-        elif event_type == "DOOR_ON_INVALID_ATTEMPT":
-            invalid_attempts = event_data.get("invalid_attempts")
-            machine_error = event_data.get("machine_error")
-            device_class = event_data.get("device_class", "Door")
-
-            log_message = (
-                f"WARNING [{device_class}]: An invalid state transition was attempted.\n"
+                f"WARNING [{device_instance}]: An invalid state transition was attempted.\n"
                 f"    - Error: {machine_error}\n"
                 f"    - Total Invalid Attempts: {invalid_attempts}"
             )
@@ -61,15 +43,45 @@ class LoggingObserver(Observer):
             print(log_message)
 
         elif event_type == "BULB_UPDATE_BRIGHTNESS":
-            brightness = event_data.get("brightness")
+            brightness = kwargs.get("brightness")
 
-            log_message = f"INFO: Brightness updated to {brightness}%."
+            log_message = (
+                f"INFO [{device_instance}]: Brightness updated to {brightness}%."
+            )
 
             print(log_message)
 
         elif event_type == "BULB_UPDATE_COLOR":
-            current_color = event_data.get("current_color")
+            current_color = kwargs.get("current_color")
 
-            log_message = f"INFO: Color changed to {current_color}"
+            log_message = f"INFO [{device_instance}]: Color changed to {current_color}"
+
+            print(log_message)
+
+        elif event_type == "OUTLET_ON_ENTER_OFF":
+            usage_time = kwargs.get("usage_time")
+            session_consumption = kwargs.get("session_consumption")
+            usage_wh = kwargs.get("usage_wh")
+
+            log_message = (
+                f"INFO [{device_instance}]: Outlet turned off. Usage session logged.\n"
+                f"    - Session duration: {usage_time}\n"
+                f"    - Session consumption: {session_consumption:.4f} Wh\n"
+                f"    - Total accumulated consumption: {usage_wh:.4f} Wh"
+            )
+
+            print(log_message)
+
+        elif event_type == "SPRINKLER_ON_EXIT_WATERING":
+            usage_time = kwargs.get("usage_time")
+            session_consumption = kwargs.get("session_consumption")
+            usage_lh = kwargs.get("usage_lh")
+
+            log_message = (
+                f"INFO [{device_instance}]: Sprinkler watering session finished.\n"
+                f"    - Session Duration: {usage_time}\n"
+                f"    - Session Consumption: {session_consumption:.4f} Liters\n"
+                f"    - Total Accumulated Usage: {usage_lh:.4f} Liters"
+            )
 
             print(log_message)

@@ -4,9 +4,10 @@ from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
 from smart_home.core.enums import SwitchEnum
+from smart_home.devices.device import Device
 
 
-class Outlet:
+class Outlet(Device):
     __power_w = PositiveValue()
 
     def __init__(self, power_w: int = 600):
@@ -32,7 +33,11 @@ class Outlet:
             states=SwitchEnum,
             transitions=transitions,
             initial=SwitchEnum.OFF,
+            send_event=True,
+            after_state_change="set_current_event",
         )
+
+        super().__init__()
 
     @property
     def power_w(self):
@@ -58,17 +63,17 @@ class Outlet:
     def start_usage_time(self, value):
         self.__start_usage_time = value
 
-    def on_enter_ON(self):
+    def on_enter_ON(self, event):
         self.start_usage_time = datetime.now()
 
-    def on_enter_OFF(self):
+    def on_enter_OFF(self, event):
         usage_time = datetime.now() - self.start_usage_time
 
         session_consumption = (usage_time.total_seconds() / 3600) * self.power_w
 
         self.usage_wh += session_consumption
 
-        print("INFO: Outlet turned off. Usage session logged.")
-        print(f"    - Session duration: {usage_time}")
-        print(f"    - Session consumption: {session_consumption:.4f} Wh")
-        print(f"    - Total accumulated consumption: {self.usage_wh:.4f} Wh")
+        self.event_data["type"] = "OUTLET_ON_ENTER_OFF"
+        self.event_data["usage_time"] = usage_time
+        self.event_data["session_consumption"] = session_consumption
+        self.event_data["usage_wh"] = self.usage_wh

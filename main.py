@@ -16,12 +16,14 @@ if __name__ == "__main__":
 
     door = Door()
     bulb = Bulb()
+    outlet = Outlet()
     sprinkler = Sprinkler()
 
     smart_home.add_observer(logging)
-    smart_home.add_devices("sprinkler", sprinkler)
     smart_home.add_devices("door", door)
     smart_home.add_devices("bulb", bulb)
+    smart_home.add_devices("outlet", outlet)
+    smart_home.add_devices("sprinkler", sprinkler)
 
     print("___DOOR___")
     print(
@@ -29,31 +31,31 @@ if __name__ == "__main__":
         smart_home.devices["door"][0].invalid_attempts,
     )
     smart_home.devices["door"][0].lock()
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
     )
     smart_home.devices["door"][0].unlock()
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
     )
     smart_home.devices["door"][0].open()
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
     )
     smart_home.devices["door"][0].close()
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
     )
     smart_home.devices["door"][0].lock()
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
@@ -62,7 +64,7 @@ if __name__ == "__main__":
         smart_home.devices["door"][0].open()
     except Exception:
         pass
-    smart_home.publish_event(smart_home.devices["door"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["door"][0].event_data)
     print(
         smart_home.devices["door"][0].state,
         smart_home.devices["door"][0].invalid_attempts,
@@ -75,21 +77,21 @@ if __name__ == "__main__":
         smart_home.devices["bulb"][0].current_color,
     )
     smart_home.devices["bulb"][0].turn_on()
-    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["bulb"][0].event_data)
     print(
         smart_home.devices["bulb"][0].state,
         smart_home.devices["bulb"][0].brightness,
         smart_home.devices["bulb"][0].current_color,
     )
     smart_home.devices["bulb"][0].set_brightness(brightness_value=100)
-    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["bulb"][0].event_data)
     print(
         smart_home.devices["bulb"][0].state,
         smart_home.devices["bulb"][0].brightness,
         smart_home.devices["bulb"][0].current_color,
     )
     smart_home.devices["bulb"][0].set_color(color=ColorEnum.WARM)
-    smart_home.publish_event(smart_home.devices["bulb"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["bulb"][0].event_data)
     print(
         smart_home.devices["bulb"][0].state,
         smart_home.devices["bulb"][0].brightness,
@@ -97,16 +99,44 @@ if __name__ == "__main__":
     )
 
     print("___OUTLET___")
-    outlet = Outlet()
-    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
-    outlet.turn_on()
-    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
-    outlet.turn_off()
-    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
-    outlet.turn_on()
-    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
-    outlet.turn_off()
-    print(outlet.state, outlet.power_w, outlet.start_usage_time, outlet.usage_wh)
+    print(
+        smart_home.devices["outlet"][0].state,
+        smart_home.devices["outlet"][0].power_w,
+        smart_home.devices["outlet"][0].start_usage_time,
+        smart_home.devices["outlet"][0].usage_wh,
+    )
+    smart_home.devices["outlet"][0].turn_on()
+    smart_home.publish_event(**smart_home.devices["outlet"][0].event_data)
+    print(
+        smart_home.devices["outlet"][0].state,
+        smart_home.devices["outlet"][0].power_w,
+        smart_home.devices["outlet"][0].start_usage_time,
+        smart_home.devices["outlet"][0].usage_wh,
+    )
+    smart_home.devices["outlet"][0].turn_off()
+    smart_home.publish_event(**smart_home.devices["outlet"][0].event_data)
+    print(
+        smart_home.devices["outlet"][0].state,
+        smart_home.devices["outlet"][0].power_w,
+        smart_home.devices["outlet"][0].start_usage_time,
+        smart_home.devices["outlet"][0].usage_wh,
+    )
+    smart_home.devices["outlet"][0].turn_on()
+    smart_home.publish_event(**smart_home.devices["outlet"][0].event_data)
+    print(
+        smart_home.devices["outlet"][0].state,
+        smart_home.devices["outlet"][0].power_w,
+        smart_home.devices["outlet"][0].start_usage_time,
+        smart_home.devices["outlet"][0].usage_wh,
+    )
+    smart_home.devices["outlet"][0].turn_off()
+    smart_home.publish_event(**smart_home.devices["outlet"][0].event_data)
+    print(
+        smart_home.devices["outlet"][0].state,
+        smart_home.devices["outlet"][0].power_w,
+        smart_home.devices["outlet"][0].start_usage_time,
+        smart_home.devices["outlet"][0].usage_wh,
+    )
 
     print("__SPRINKLER__")
     print(
@@ -116,7 +146,7 @@ if __name__ == "__main__":
         smart_home.devices["sprinkler"][0].usage_lh,
     )
     smart_home.devices["sprinkler"][0].turn_on()
-    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["sprinkler"][0].event_data)
     print(
         smart_home.devices["sprinkler"][0].state,
         smart_home.devices["sprinkler"][0].flow_rate,
@@ -124,7 +154,7 @@ if __name__ == "__main__":
         smart_home.devices["sprinkler"][0].usage_lh,
     )
     smart_home.devices["sprinkler"][0].pause_watering()
-    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["sprinkler"][0].event_data)
     print(
         smart_home.devices["sprinkler"][0].state,
         smart_home.devices["sprinkler"][0].flow_rate,
@@ -132,7 +162,7 @@ if __name__ == "__main__":
         smart_home.devices["sprinkler"][0].usage_lh,
     )
     smart_home.devices["sprinkler"][0].resume_watering()
-    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["sprinkler"][0].event_data)
     print(
         smart_home.devices["sprinkler"][0].state,
         smart_home.devices["sprinkler"][0].flow_rate,
@@ -140,7 +170,7 @@ if __name__ == "__main__":
         smart_home.devices["sprinkler"][0].usage_lh,
     )
     smart_home.devices["sprinkler"][0].stop_watering()
-    smart_home.publish_event(smart_home.devices["sprinkler"][0].event_data)
+    smart_home.publish_event(**smart_home.devices["sprinkler"][0].event_data)
     print(
         smart_home.devices["sprinkler"][0].state,
         smart_home.devices["sprinkler"][0].flow_rate,

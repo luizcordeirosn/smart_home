@@ -37,5 +37,5 @@ class Hub(Subject):
 
         self.devices[name] = device_list
 
-    def publish_event(self, event_data):
-        self.notify_event(event_data=event_data)
+    def publish_event(self, **kwargs):
+        self.notify_event(**kwargs)
