@@ -1,5 +1,6 @@
 from smart_home.core.enums import ColorEnum
 from smart_home.devices.bulb import Bulb
+from smart_home.devices.camera import Camera
 from smart_home.devices.door import Door
 from smart_home.devices.outlet import Outlet
 from smart_home.devices.sprinkler import Sprinkler
@@ -94,3 +95,13 @@ if __name__ == "__main__":
     print(thermostat.state, thermostat.current_temperature)
     thermostat.check_temperature(target_temperature=21.5)
     print(thermostat.state, thermostat.current_temperature)
+
+    print("__CAMERA__")
+    camera = Camera(memory_mb=2000)
+    print(camera.state, camera.memory_mb)
+    camera.turn_on()
+    print(camera.state, camera.memory_mb)
+    camera.record()
+    print(camera.state, camera.memory_mb)
+    camera.stop_recording()
+    print(camera.state, camera.memory_mb)

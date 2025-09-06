@@ -1,54 +1,54 @@
 from transitions import Machine
 
-from smart_home.core.enums import ThermostatEnum
+from smart_home.core.enums import ThermostatStateEnum
 
 
 class Thermostat:
-    def __init__(self, initial_state=ThermostatEnum.OFF):
+    def __init__(self, initial_state=ThermostatStateEnum.OFF):
         self.__current_temperature = 0.0
 
         transitions = [
             {
                 "trigger": "turn_on",
-                "source": ThermostatEnum.OFF,
-                "dest": ThermostatEnum.IDLE,
+                "source": ThermostatStateEnum.OFF,
+                "dest": ThermostatStateEnum.IDLE,
             },
             {
                 "trigger": "turn_off",
                 "source": [
-                    ThermostatEnum.IDLE,
-                    ThermostatEnum.HEATING,
-                    ThermostatEnum.COOLING,
+                    ThermostatStateEnum.IDLE,
+                    ThermostatStateEnum.HEATING,
+                    ThermostatStateEnum.COOLING,
                 ],
-                "dest": ThermostatEnum.OFF,
+                "dest": ThermostatStateEnum.OFF,
             },
             {
                 "trigger": "check_temperature",
-                "source": [ThermostatEnum.IDLE, ThermostatEnum.COOLING],
-                "dest": ThermostatEnum.HEATING,
+                "source": [ThermostatStateEnum.IDLE, ThermostatStateEnum.COOLING],
+                "dest": ThermostatStateEnum.HEATING,
                 "conditions": "is_too_cold",
             },
             {
                 "trigger": "check_temperature",
-                "source": [ThermostatEnum.IDLE, ThermostatEnum.HEATING],
-                "dest": ThermostatEnum.COOLING,
+                "source": [ThermostatStateEnum.IDLE, ThermostatStateEnum.HEATING],
+                "dest": ThermostatStateEnum.COOLING,
                 "conditions": "is_too_hot",
             },
             {
                 "trigger": "check_temperature",
                 "source": [
-                    ThermostatEnum.HEATING,
-                    ThermostatEnum.COOLING,
-                    ThermostatEnum.IDLE,
+                    ThermostatStateEnum.HEATING,
+                    ThermostatStateEnum.COOLING,
+                    ThermostatStateEnum.IDLE,
                 ],
-                "dest": ThermostatEnum.IDLE,
+                "dest": ThermostatStateEnum.IDLE,
                 "conditions": "is_temperature_ok",
             },
         ]
 
         self.machine = Machine(
             self,
-            states=ThermostatEnum,
+            states=ThermostatStateEnum,
             transitions=transitions,
             initial=initial_state,
         )

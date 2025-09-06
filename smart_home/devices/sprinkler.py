@@ -3,14 +3,16 @@ from datetime import datetime
 from transitions import Machine
 
 from smart_home.core.descriptors import PositiveValue
-from smart_home.core.enums import SprinklerEnum
+from smart_home.core.enums import SprinklerStateEnum
 
 
 class Sprinkler:
     __flow_rate = PositiveValue()
 
     def __init__(
-        self, initial_state: SprinklerEnum = SprinklerEnum.IDLE, flow_rate: int = 15
+        self,
+        initial_state: SprinklerStateEnum = SprinklerStateEnum.IDLE,
+        flow_rate: int = 15,
     ):
         self.flow_rate = flow_rate
         self.__usage_lh = 0
@@ -19,29 +21,29 @@ class Sprinkler:
         transitions = [
             {
                 "trigger": "turn_on",
-                "source": SprinklerEnum.IDLE,
-                "dest": SprinklerEnum.WATERING,
+                "source": SprinklerStateEnum.IDLE,
+                "dest": SprinklerStateEnum.WATERING,
             },
             {
                 "trigger": "pause_watering",
-                "source": SprinklerEnum.WATERING,
-                "dest": SprinklerEnum.PAUSED,
+                "source": SprinklerStateEnum.WATERING,
+                "dest": SprinklerStateEnum.PAUSED,
             },
             {
                 "trigger": "resume_watering",
-                "source": SprinklerEnum.PAUSED,
-                "dest": SprinklerEnum.WATERING,
+                "source": SprinklerStateEnum.PAUSED,
+                "dest": SprinklerStateEnum.WATERING,
             },
             {
                 "trigger": "stop_watering",
-                "source": [SprinklerEnum.WATERING, SprinklerEnum.PAUSED],
-                "dest": SprinklerEnum.IDLE,
+                "source": [SprinklerStateEnum.WATERING, SprinklerStateEnum.PAUSED],
+                "dest": SprinklerStateEnum.IDLE,
             },
         ]
 
         self.machine = Machine(
             model=self,
-            states=SprinklerEnum,
+            states=SprinklerStateEnum,
             transitions=transitions,
             initial=initial_state,
         )
