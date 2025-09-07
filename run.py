@@ -212,6 +212,12 @@ if __name__ == "__main__":
         smart_home.devices["thermostat"][0].current_temperature,
     )
 
+    smart_home.devices["thermostat"][0].turn_off()
+    smart_home.publish_event(**smart_home.devices["thermostat"][0].event_data)
+    print(
+        smart_home.devices["thermostat"][0].state,
+        smart_home.devices["thermostat"][0].current_temperature,
+    )
     print("__CAMERA__")
     print(
         smart_home.devices["camera"][0].state,

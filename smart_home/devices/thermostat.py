@@ -97,7 +97,7 @@ class Thermostat(Device):
         self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_HEATING
         self.event_data["target_temperature"] = target_temperature
 
-    def on_enter_OFF(self):
-        self.current_temperature = 0
+    def on_enter_OFF(self, event):
+        self.current_temperature = 0.0
 
         self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_OFF

@@ -21,7 +21,7 @@ def setup_devices_hub(smart_home):
         smart_home.add_devices("door", Door(initial_state=DoorEnum.OPENED))
 
     for _ in range(20):
-        smart_home.add_devices("bulb", Bulb(initial_state=SwitchEnum.ON))
+        smart_home.add_devices("bulb", Bulb(initial_state=SwitchEnum.OFF))
 
     for _ in range(10):
         smart_home.add_devices("outlet", Outlet(initial_state=SwitchEnum.ON))
@@ -29,11 +29,13 @@ def setup_devices_hub(smart_home):
     for _ in range(3):
         smart_home.add_devices("sprinkler", Sprinkler())
 
-    for _ in range(3):
+    for _ in range(2):
         smart_home.add_devices("thermostat", Thermostat())
 
     for _ in range(3):
-        smart_home.add_devices("camera", Camera(memory_mb=2000))
+        smart_home.add_devices(
+            "camera", Camera(initial_state=CameraStateEnum.RECORDING, memory_mb=2000)
+        )
 
 
 def setup_routines(smart_home):
@@ -43,11 +45,16 @@ def setup_routines(smart_home):
             {"type": "door", "indices": (2, 4), "target_state": DoorEnum.LOCKED},
             {"type": "bulb", "indices": "all", "target_state": SwitchEnum.OFF},
             {"type": "outlet", "indices": "all", "target_state": SwitchEnum.OFF},
-            {"type": "thermostat", "indices": (0,), "target_temperature": 28.0},
+            {
+                "type": "thermostat",
+                "indices": (0,),
+                "target_state": ThermostatStateEnum.HEATING,
+                "target_temperature": 28.0,
+            },
             {
                 "type": "sprinkler",
                 "indices": "all",
-                "target_state": SprinklerStateEnum.IDLE,
+                "target_state": SprinklerStateEnum.WATERING,
             },
             {
                 "type": "camera",
@@ -65,9 +72,11 @@ def setup_routines(smart_home):
                 "type": "bulb",
                 "indices": (0, 3),
                 "target_state": SwitchEnum.ON,
-                "attributes": {"brightness": 30},
+                "attributes": {
+                    "brightness": 30,
+                    "color": ColorEnum.DAYLIGHT,
+                },
             },
-            {"type": "bulb", "indices": (3, 10), "target_state": SwitchEnum.OFF},
             {
                 "type": "thermostat",
                 "indices": (0,),
@@ -77,7 +86,7 @@ def setup_routines(smart_home):
             {
                 "type": "camera",
                 "indices": "all",
-                "target_state": CameraStateEnum.RECORDING,
+                "target_state": CameraStateEnum.OFF,
             },
         ],
     }
@@ -97,14 +106,16 @@ if __name__ == "__main__":
     setup_devices_hub(smart_home)
     setup_routines(smart_home)
 
-    action = smart_home.routines[0].get("actions")[0]
+    for device_type, devices in smart_home.devices.items():
+        print(f"__{device_type}__")
+        for device in devices:
+            print(device.state)
 
-    for door in smart_home.devices.get("door"):
-        print(door.state)
+    smart_home.exec_routine("leaving_home")
 
-    print("____")
+    print("___")
 
-    smart_home.exec_door_routine(action)
-
-    for door in smart_home.devices.get("door"):
-        print(door.state)
+    for device_type, devices in smart_home.devices.items():
+        print(f"__{device_type}__")
+        for device in devices:
+            print(device.state)
