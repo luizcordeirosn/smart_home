@@ -1,6 +1,13 @@
 from abc import ABC
 
-from smart_home.core.enums import ThermostatStateEnum
+from smart_home.core.enums import (
+    CameraStateEnum,
+    DoorEnum,
+    SprinklerStateEnum,
+    SwitchEnum,
+    ThermostatStateEnum,
+)
+from smart_home.core.logger import Logger
 
 
 class Subject(ABC):
@@ -25,8 +32,7 @@ class Subject(ABC):
 class Hub(Subject):
     def __init__(self):
         self.__devices = {}
-        self.__routines = []
-        self.routine_handlers = {
+        self.__routine_handlers = {
             "door": self.change_doors_state,
             "bulb": self.change_bulbs_state,
             "outlet": self.change_outlets_state,
@@ -34,6 +40,18 @@ class Hub(Subject):
             "thermostat": self.change_thermostats_state,
             "camera": self.change_cameras_state,
         }
+        self.__enum_map = {
+            "door": DoorEnum,
+            "bulb": SwitchEnum,
+            "outlet": SwitchEnum,
+            "sprinkler": SprinklerStateEnum,
+            "thermostat": ThermostatStateEnum,
+            "camera": CameraStateEnum,
+        }
+
+        logger = Logger()
+
+        self.__routines = logger.load_config_from_json().get("routines")
 
         super().__init__()
 
@@ -44,6 +62,14 @@ class Hub(Subject):
     @property
     def routines(self):
         return self.__routines
+
+    @property
+    def routine_handlers(self):
+        return self.__routine_handlers
+
+    @property
+    def enum_map(self):
+        return self.__enum_map
 
     def add_devices(self, name, device):
         device_list = self.devices.get(name, [])
@@ -56,23 +82,24 @@ class Hub(Subject):
         self.notify_event(**kwargs)
 
     def exec_routine(self, routine_name):
-        filtered_routine = list(
-            filter(lambda r: r["name"] == routine_name, self.routines)
-        )
+        routine = self.routines.get(routine_name)
 
-        if len(filtered_routine) > 0:
-            routine = filtered_routine[0]
-            actions = routine.get("actions")
+        if routine is None:
+            return
 
-            for action in actions:
-                handler = self.routine_handlers.get(action.get("type"))
-                if handler:
-                    handler(action)
+        for action in routine:
+            handler = self.routine_handlers.get(action.get("type"))
+            if handler:
+                handler(action)
 
     def change_doors_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         devices = self.devices.get(device_type)
 
         if indices == "all":
@@ -97,7 +124,11 @@ class Hub(Subject):
     def change_bulbs_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         attributes = action.get("attributes")
         devices = self.devices.get(device_type)
 
@@ -141,7 +172,11 @@ class Hub(Subject):
     def change_outlets_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         devices = self.devices.get(device_type)
 
         if indices == "all":
@@ -166,7 +201,11 @@ class Hub(Subject):
     def change_sprinklers_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         devices = self.devices.get(device_type)
 
         if indices == "all":
@@ -196,7 +235,11 @@ class Hub(Subject):
     def change_thermostats_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         attributes = action.get("attributes")
         devices = self.devices.get(device_type)
 
@@ -243,7 +286,11 @@ class Hub(Subject):
     def change_cameras_state(self, action):
         device_type = action.get("type")
         indices = action.get("indices")
-        target_state = action.get("target_state")
+
+        target_state_name = action.get("target_state")
+        target_state_enum = self.enum_map.get(device_type)
+        target_state = target_state_enum[target_state_name]
+
         devices = self.devices.get(device_type)
 
         if indices == "all":

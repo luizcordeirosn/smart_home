@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 from datetime import datetime
 
@@ -83,3 +84,7 @@ class Logger(Singleton):
                 writer.writeheader()
 
             writer.writerows(data_dicts)
+
+    def load_config_from_json(self):
+        with open("smart_home/data/smart_house_config.json", "r+") as file:
+            return json.load(file)

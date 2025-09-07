@@ -241,3 +241,5 @@ if __name__ == "__main__":
         smart_home.devices["camera"][0].state,
         smart_home.devices["camera"][0].memory_mb,
     )
+
+    print(smart_home.routines)

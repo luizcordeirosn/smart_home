@@ -1,0 +1,67 @@
+{
+    "hub": { "nome": "Smart House", "versao": "1.0" },
+    "routines": {
+    "leaving_home": [
+      {
+        "type": "door",
+        "indices": [2, 4],
+        "target_state": "LOCKED"
+      },
+      {
+        "type": "bulb",
+        "indices": "all",
+        "target_state": "OFF"
+      },
+      {
+        "type": "outlet",
+        "indices": "all",
+        "target_state": "OFF"
+      },
+      {
+        "type": "thermostat",
+        "indices": [0],
+        "target_state": "HEATING",
+        "target_temperature": 28.0
+      },
+      {
+        "type": "sprinkler",
+        "indices": "all",
+        "target_state": "WATERING"
+      },
+      {
+        "type": "camera",
+        "indices": "all",
+        "target_state": "RECORDING"
+      }
+    ],
+    "good_night": [
+      {
+        "type": "door",
+        "indices": "all",
+        "target_state": "LOCKED"
+      },
+      {
+        "type": "bulb",
+        "indices": [0, 3],
+        "target_state": "ON",
+        "attributes": {
+          "brightness": 30,
+          "color": "DAYLIGHT"
+        }
+      },
+      {
+        "type": "thermostat",
+        "indices": [0],
+        "target_state": "COOLING",
+        "attributes": {
+          "target_temperature": 18
+        }
+      },
+      {
+        "type": "camera",
+        "indices": "all",
+        "target_state": "OFF"
+      }
+    ]
+  }
+}
