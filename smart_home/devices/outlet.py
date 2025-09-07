@@ -10,7 +10,7 @@ from smart_home.devices.device import Device
 class Outlet(Device):
     __power_w = PositiveValue()
 
-    def __init__(self, power_w: int = 600):
+    def __init__(self, power_w: int = 600, initial_state=SwitchEnum.OFF):
         self.power_w = power_w
         self.__usage_wh = 0
         self.__start_usage_time = None
@@ -32,7 +32,7 @@ class Outlet(Device):
             self,
             states=SwitchEnum,
             transitions=transitions,
-            initial=SwitchEnum.OFF,
+            initial=initial_state,
             send_event=True,
             after_state_change="set_current_event",
         )
