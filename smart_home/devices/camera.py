@@ -8,7 +8,12 @@ from smart_home.devices.device import Device
 class Camera(Device):
     __memory_mb = PositiveValue()
 
-    def __init__(self, initial_state=CameraStateEnum.OFF, memory_mb=2000):
+    def __init__(
+        self,
+        device_name="Default Camera",
+        initial_state=CameraStateEnum.OFF,
+        memory_mb=2000,
+    ):
         self.__memory_mb = memory_mb
 
         transitions = [
@@ -44,7 +49,7 @@ class Camera(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__()
+        super().__init__(device_name)
 
     @property
     def memory_mb(self):

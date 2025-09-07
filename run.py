@@ -1,6 +1,6 @@
 from smart_home.core.enums import ColorEnum
 from smart_home.core.hub import Hub
-from smart_home.core.observers import LoggingObserver
+from smart_home.core.observers import EventHandler
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.camera import Camera
 from smart_home.devices.door import Door
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print("__HUB__")
 
     smart_home = Hub()
-    logging = LoggingObserver()
+    event_handler = EventHandler()
 
     door = Door()
     bulb = Bulb()
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     thermostat = Thermostat()
     camera = Camera(memory_mb=2000)
 
-    smart_home.add_observer(logging)
+    smart_home.add_observer(event_handler)
     smart_home.add_devices("door", door)
     smart_home.add_devices("bulb", bulb)
     smart_home.add_devices("outlet", outlet)

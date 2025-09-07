@@ -12,6 +12,7 @@ class Sprinkler(Device):
 
     def __init__(
         self,
+        device_name="Default Sprinkler",
         initial_state: SprinklerStateEnum = SprinklerStateEnum.IDLE,
         flow_rate: int = 15,
     ):
@@ -51,7 +52,7 @@ class Sprinkler(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__()
+        super().__init__(device_name)
 
     @property
     def flow_rate(self):

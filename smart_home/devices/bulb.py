@@ -9,7 +9,9 @@ class Bulb(Device):
     __brightness = BrightnessRange()
     __current_color = ValidColor()
 
-    def __init__(self, initial_state: SwitchEnum = SwitchEnum.OFF):
+    def __init__(
+        self, device_name="Default Bulb", initial_state: SwitchEnum = SwitchEnum.OFF
+    ):
         self.__brightness = 75
         self.__current_color = ColorEnum.NEUTRAL
 
@@ -49,7 +51,7 @@ class Bulb(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__()
+        super().__init__(device_name)
 
     @property
     def brightness(self):

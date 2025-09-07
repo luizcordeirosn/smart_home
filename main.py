@@ -7,7 +7,7 @@ from smart_home.core.enums import (
     ThermostatStateEnum,
 )
 from smart_home.core.hub import Hub
-from smart_home.core.observers import LoggingObserver
+from smart_home.core.observers import EventHandler
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.camera import Camera
 from smart_home.devices.door import Door
@@ -99,9 +99,9 @@ if __name__ == "__main__":
     print("__HUB__")
 
     smart_home = Hub()
-    logging = LoggingObserver()
+    event_handler = EventHandler()
 
-    smart_home.add_observer(logging)
+    smart_home.add_observer(event_handler)
 
     setup_devices_hub(smart_home)
     setup_routines(smart_home)
@@ -118,4 +118,4 @@ if __name__ == "__main__":
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")
         for device in devices:
-            print(device.state)
+            print(device.state, device.device_name)

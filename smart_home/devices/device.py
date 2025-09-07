@@ -2,8 +2,9 @@ from abc import ABC
 
 
 class Device(ABC):
-    def __init__(self):
+    def __init__(self, device_name):
         self.__event_data = {}
+        self.__device_name = device_name
 
     @property
     def event_data(self):
@@ -13,6 +14,15 @@ class Device(ABC):
     def event_data(self, value):
         self.__event_data = value
 
+    @property
+    def device_name(self):
+        return self.__device_name
+
+    @device_name.setter
+    def device_name(self, value):
+        self.__device_name = value
+
     def set_current_event(self, event):
         self.event_data["event"] = event
         self.event_data["device_instance"] = self.__class__.__name__
+        self.event_data["device_name"] = self.device_name

@@ -5,7 +5,9 @@ from smart_home.devices.device import Device
 
 
 class Thermostat(Device):
-    def __init__(self, initial_state=ThermostatStateEnum.OFF):
+    def __init__(
+        self, device_name="Default Thermostat", initial_state=ThermostatStateEnum.OFF
+    ):
         self.__current_temperature = 0.0
 
         transitions = [
@@ -56,7 +58,7 @@ class Thermostat(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__()
+        super().__init__(device_name)
 
     @property
     def current_temperature(self):
