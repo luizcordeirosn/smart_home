@@ -1,9 +1,0 @@
-Time,Device Instance,Device ID,Source,Destination,Error,Trigger
-2025-09-07 21:58:45.693203,Door,living_room_door,OPENED,UNLOCKED,N/A,close
-2025-09-07 21:58:45.693389,Door,living_room_door,UNLOCKED,LOCKED,N/A,lock
-2025-09-07 21:58:45.693474,Bulb,living_room_bulb,ON,ON,N/A,set_brightness
-2025-09-07 21:58:45.693601,Bulb,living_room_bulb,ON,ON,N/A,set_color
-2025-09-07 21:58:45.693698,Thermostat,living_room_thermostat,OFF,IDLE,N/A,turn_on
-2025-09-07 21:58:45.693785,Thermostat,living_room_thermostat,IDLE,COOLING,N/A,check_temperature
-2025-09-07 21:58:45.693874,Camera,security_cam,OFF,IDLE,N/A,turn_on
-2025-09-07 21:58:45.693925,Camera,security_cam,IDLE,RECORDING,N/A,record
