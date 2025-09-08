@@ -1,5 +1,4 @@
 from transitions import Machine
-from transitions.core import MachineError
 
 from smart_home.core.enums import DoorEnum, EventType
 from smart_home.devices.device import Device
@@ -63,8 +62,5 @@ class Door(Device):
 
         self.event_data["type"] = EventType.DOOR_ON_INVALID_ATTEMPT
         self.event_data["invalid_attempts"] = self.invalid_attempts
-        self.event_data["machine_error"] = event.error
 
         self.set_current_event(event)
-
-        # raise MachineError(event.error)

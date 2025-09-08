@@ -1,4 +1,4 @@
-from smart_home.core.enums import DoorEnum, SwitchEnum
+from smart_home.core.enums import DoorEnum, SwitchEnum, ThermostatStateEnum
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
 
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     smart_home.add_devices(
         device_id="living_room_thermostat",
         device_type="thermostat",
+        initial_state=ThermostatStateEnum.OFF,
     )
 
     smart_home.add_devices(
@@ -106,10 +107,17 @@ if __name__ == "__main__":
         smart_home.devices.get("camera")[0].memory_mb,
     )
 
+    # smart_home.devices.get("thermostat")[0].check_temperature()
+    # smart_home.notify_event(**smart_home.devices.get("thermostat")[0].event_data)
+
+    print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")
         for device in devices:
-            print(device.state)
+            print(
+                device.state,
+                device.device_name,
+            )
 
     smart_home.exec_routine("good_night")
 
@@ -118,4 +126,29 @@ if __name__ == "__main__":
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")
         for device in devices:
-            print(device.state, device.device_name)
+            print(
+                device.state,
+                device.device_name,
+            )
+
+    device = smart_home.get_device_by_device_type_and_device_id(
+        "bulb", "living_room_bulb"
+    )
+    print(device.state, device.brightness)
+    smart_home.exec_device_comand(
+        "bulb", "living_room_bulb", "set_brightness", brightness_value=50
+    )
+    device = smart_home.get_device_by_device_type_and_device_id(
+        "bulb", "living_room_bulb"
+    )
+    print(device.state, device.brightness)
+
+    smart_home.get_device_commands_by_device_type_and_device_id(
+        "door", "living_room_door"
+    )
+
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "bulb", "living_room_bulb"
+    )
+
+    print(commands)

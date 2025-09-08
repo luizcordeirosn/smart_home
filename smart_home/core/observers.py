@@ -39,11 +39,11 @@ class EventHandler(Observer):
 
     def door_invalid_attempt(self, **kwargs):
         invalid_attempts = kwargs.get("invalid_attempts")
-        machine_error = kwargs.get("machine_error")
+        error = kwargs.get("event").error
 
         return (
             f"WARNING - Invalid transition attempted. "
-            f"Error: '{machine_error}'. "
+            f"Error: '{error}'. "
             f"Total Attempts: {invalid_attempts}"
         )
 

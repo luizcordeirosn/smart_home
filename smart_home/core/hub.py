@@ -8,6 +8,12 @@ from smart_home.core.enums import (
     SwitchEnum,
     ThermostatStateEnum,
 )
+from smart_home.core.error import (
+    DeviceIndexError,
+    DeviceMachineAttributeError,
+    DeviceMachineTriggerError,
+    RoutineNotFoundError,
+)
 from smart_home.core.logger import Logger
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.camera import Camera
@@ -64,6 +70,20 @@ class Hub(Subject):
             "thermostat": ThermostatStateEnum,
             "camera": CameraStateEnum,
         }
+        self.__devices_command = {
+            "door": ["close", "lock", "unlock", "open"],
+            "bulb": [
+                "turn_on",
+                "set_brightness(brigthness_value:int = ?)",
+                "set_color(color:str = ?)",
+                "turn_off",
+            ],
+            "bulb_color": ["turn_off", "turn_on"],
+            "outlet": SwitchEnum,
+            "sprinkler": SprinklerStateEnum,
+            "thermostat": ThermostatStateEnum,
+            "camera": CameraStateEnum,
+        }
 
         logger = Logger()
 
@@ -97,9 +117,7 @@ class Hub(Subject):
         exist_device = self.exist_device(device_type, device_id)
 
         if exist_device:
-            raise ValueError(
-                f"Device of type '{device_type}' with ID '{device_id}' already exists."
-            )
+            raise DeviceIndexError(device_type=device_type, device_id=device_id)
 
         device_class = self.class_map.get(device_type)
         device = device_class(device_id, **kwargs)
@@ -108,7 +126,7 @@ class Hub(Subject):
 
         self.devices[device_type] = device_list
 
-    def get_routine_by_device_type_and_device_id(self, device_type, device_id):
+    def get_device_by_device_type_and_device_id(self, device_type, device_id):
         devices = list(
             filter(
                 lambda d: d.device_id == device_id, self.devices.get(device_type, [])
@@ -117,6 +135,21 @@ class Hub(Subject):
 
         if len(devices) == 1:
             return devices[0]
+
+    def get_device_commands_by_device_type_and_device_id(self, device_type, device_id):
+        device = self.get_device_by_device_type_and_device_id(device_type, device_id)
+
+        len_device_enum = len(self.enum_map.get(device_type))
+
+        return list(device.machine.events.keys())[len_device_enum:]
+
+    def get_routine_by_routine_name(self, routine_name):
+        routine = self.routines.get(routine_name)
+
+        if routine is None:
+            raise RoutineNotFoundError(routine_name=routine_name)
+
+        return routine
 
     def exist_device(self, device_type, device_id):
         device = list(
@@ -127,32 +160,47 @@ class Hub(Subject):
 
         return len(device) > 0
 
-    def exec_routine(self, routine_name):
-        routine = self.routines.get(routine_name)
+    def exist_device_command(self, device, command_name):
+        device_attributes = device.__dir__()
 
-        if routine is None:
-            return
+        if command_name in device_attributes:
+            return True
+        return False
+
+    def exec_device_comand(self, device_type, device_id, command_name, **kwargs):
+        device = self.get_device_by_device_type_and_device_id(device_type, device_id)
+
+        if not self.exist_device_command(device, command_name):
+            raise DeviceMachineAttributeError(command_name=command_name)
+
+        device.__getattribute__(command_name)(**kwargs)
+
+        event = device.event_data.get("event")
+
+        if event.error is not None:
+            raise DeviceMachineTriggerError(event=event)
+
+    def exec_routine(self, routine_name):
+        routine = self.get_routine_by_routine_name(routine_name)
 
         for action in routine:
             handler = self.routine_handlers.get(action.get("type"))
             if handler:
-                handler(action)
+                device_type = action.get("type")
+                device_id = action.get("device_id")
 
-    def change_doors_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
+                device = self.get_device_by_device_type_and_device_id(
+                    device_type,
+                    device_id,
+                )
 
+                if device is not None:
+                    handler(action, device, device_type)
+
+    def change_doors_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
-
-        device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
 
         door_cycle = [device.close, device.lock, device.unlock, device.open]
 
@@ -162,23 +210,12 @@ class Hub(Subject):
             cycle()
             self.notify_event(**device.event_data)
 
-    def change_bulbs_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
-
+    def change_bulbs_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
         attributes = action.get("attributes")
-
-        device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
 
         bulb_cycle = [
             device.turn_on,
@@ -219,21 +256,10 @@ class Hub(Subject):
                 cycle()
                 self.notify_event(**device.event_data)
 
-    def change_outlets_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
-
+    def change_outlets_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
-
-        device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
 
         outlet_cycle = [
             device.turn_off,
@@ -246,21 +272,12 @@ class Hub(Subject):
             cycle()
             self.notify_event(**device.event_data)
 
-    def change_sprinklers_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
-
+    def change_sprinklers_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        device = device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
+        device
 
         sprinkler_cycle = [
             device.turn_on,
@@ -275,23 +292,14 @@ class Hub(Subject):
             cycle()
             self.notify_event(**device.event_data)
 
-    def change_thermostats_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
-
+    def change_thermostats_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
         attributes = action.get("attributes")
 
-        device = device = device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
+        device = device
 
         thermostat_cycle = [
             device.turn_on,
@@ -326,21 +334,12 @@ class Hub(Subject):
                 cycle()
                 self.notify_event(**device.event_data)
 
-    def change_cameras_state(self, action):
-        device_type = action.get("type")
-        device_id = action.get("device_id")
-
+    def change_cameras_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        device = device = device = self.get_routine_by_device_type_and_device_id(
-            device_type,
-            device_id,
-        )
-
-        if device is None:
-            return
+        device = device
 
         cameras_cycle = [
             device.turn_on,
