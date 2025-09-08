@@ -75,10 +75,20 @@ class Bulb(Device):
         self.__current_color = value
 
     def is_brightness_in_range(self, event):
-        return 0 <= event.kwargs.get("brightness_value") <= 100
+        brightness_value = event.kwargs.get("brightness_value")
+
+        if brightness_value is None:
+            raise ValueError("brightness_value argument is missing")
+
+        return 0 <= brightness_value <= 100
 
     def is_valid_color(self, event):
-        return isinstance(event.kwargs.get("color"), ColorEnum)
+        color = event.kwargs.get("color")
+
+        if color is None:
+            raise ValueError("color argument is missing")
+
+        return isinstance(color, ColorEnum)
 
     def update_brightness(self, event):
         self.brightness = event.kwargs.get("brightness_value")

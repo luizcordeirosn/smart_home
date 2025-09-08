@@ -1,4 +1,4 @@
-from smart_home.core.enums import DoorEnum, SwitchEnum, ThermostatStateEnum
+from smart_home.core.enums import ColorEnum, DoorEnum, SwitchEnum, ThermostatStateEnum
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
 
@@ -134,21 +134,40 @@ if __name__ == "__main__":
     device = smart_home.get_device_by_device_type_and_device_id(
         "bulb", "living_room_bulb"
     )
-    print(device.state, device.brightness)
+    print(device.state, device.brightness, device.current_color)
     smart_home.exec_device_comand(
-        "bulb", "living_room_bulb", "set_brightness", brightness_value=50
+        "bulb", "living_room_bulb", "set_color", color=ColorEnum.DAYLIGHT
     )
     device = smart_home.get_device_by_device_type_and_device_id(
         "bulb", "living_room_bulb"
     )
-    print(device.state, device.brightness)
+    print(device.state, device.brightness, device.current_color)
 
-    smart_home.get_device_commands_by_device_type_and_device_id(
-        "door", "living_room_door"
-    )
+    # smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "door", "living_room_door"
+    # )
 
-    commands = smart_home.get_device_commands_by_device_type_and_device_id(
-        "bulb", "living_room_bulb"
-    )
-
-    print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "door", "living_room_door"
+    # )
+    # print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "bulb", "living_room_bulb"
+    # )
+    # print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "outlet", "living_room_outlet"
+    # )
+    # print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "sprinkler", "garden_sprinkler"
+    # )
+    # print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "thermostat", "living_room_thermostat"
+    # )
+    # print(commands)
+    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
+    #     "camera", "security_cam"
+    # )
+    # print(commands)

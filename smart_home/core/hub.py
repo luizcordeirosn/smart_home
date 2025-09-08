@@ -12,6 +12,7 @@ from smart_home.core.error import (
     DeviceIndexError,
     DeviceMachineAttributeError,
     DeviceMachineTriggerError,
+    DeviceNotFoundError,
     RoutineNotFoundError,
 )
 from smart_home.core.logger import Logger
@@ -70,20 +71,6 @@ class Hub(Subject):
             "thermostat": ThermostatStateEnum,
             "camera": CameraStateEnum,
         }
-        self.__devices_command = {
-            "door": ["close", "lock", "unlock", "open"],
-            "bulb": [
-                "turn_on",
-                "set_brightness(brigthness_value:int = ?)",
-                "set_color(color:str = ?)",
-                "turn_off",
-            ],
-            "bulb_color": ["turn_off", "turn_on"],
-            "outlet": SwitchEnum,
-            "sprinkler": SprinklerStateEnum,
-            "thermostat": ThermostatStateEnum,
-            "camera": CameraStateEnum,
-        }
 
         logger = Logger()
 
@@ -137,6 +124,9 @@ class Hub(Subject):
             return devices[0]
 
     def get_device_commands_by_device_type_and_device_id(self, device_type, device_id):
+        if not self.exist_device(device_type, device_id):
+            raise DeviceNotFoundError(device_type=device_type, device_id=device_id)
+
         device = self.get_device_by_device_type_and_device_id(device_type, device_id)
 
         len_device_enum = len(self.enum_map.get(device_type))
@@ -168,6 +158,9 @@ class Hub(Subject):
         return False
 
     def exec_device_comand(self, device_type, device_id, command_name, **kwargs):
+        if not self.exist_device(device_type, device_id):
+            raise DeviceNotFoundError(device_type=device_type, device_id=device_id)
+
         device = self.get_device_by_device_type_and_device_id(device_type, device_id)
 
         if not self.exist_device_command(device, command_name):
@@ -178,7 +171,7 @@ class Hub(Subject):
         event = device.event_data.get("event")
 
         if event.error is not None:
-            raise DeviceMachineTriggerError(event=event)
+            raise DeviceMachineTriggerError(event=event, trigger=event.event.name)
 
     def exec_routine(self, routine_name):
         routine = self.get_routine_by_routine_name(routine_name)
@@ -245,7 +238,6 @@ class Hub(Subject):
             else:
                 brightness = device.brightness
                 color = device.current_color
-            # TODO Verificar lógica com relação a mudança de estados durante a rotina
             if brightness != device.brightness and device.state == SwitchEnum.ON:
                 cycle(brightness_value=brightness)
                 self.notify_event(**device.event_data)
