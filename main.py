@@ -1,4 +1,4 @@
-from smart_home.core.enums import DoorEnum, SwitchEnum
+from smart_home.core.enums import DoorEnum, SwitchEnum, ThermostatStateEnum
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
 
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     smart_home.add_devices(
         device_id="living_room_thermostat",
         device_type="thermostat",
+        initial_state=ThermostatStateEnum.OFF,
     )
 
     smart_home.add_devices(
@@ -106,16 +107,29 @@ if __name__ == "__main__":
         smart_home.devices.get("camera")[0].memory_mb,
     )
 
+    print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
-        print(f"__{device_type}__")
+        # print(f"__{device_type}__")
         for device in devices:
-            print(device.state)
+            if device_type == "bulb":
+                print(
+                    device.state,
+                    device.device_name,
+                    # device.brightness,
+                    # device.current_color,
+                )
 
     smart_home.exec_routine("good_night")
 
     print("___")
 
     for device_type, devices in smart_home.devices.items():
-        print(f"__{device_type}__")
+        # print(f"__{device_type}__")
         for device in devices:
-            print(device.state, device.device_name)
+            if device_type == "bulb":
+                print(
+                    device.state,
+                    device.device_name,
+                    # device.brightness,
+                    # device.current_color,
+                )

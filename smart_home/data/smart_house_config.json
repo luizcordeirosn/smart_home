@@ -43,7 +43,7 @@
       {
         "type": "bulb",
         "device_id": "living_room_bulb",
-        "target_state": "ON",
+        "target_state": "OFF",
         "attributes": {
           "brightness": 30,
           "color": "COOL"

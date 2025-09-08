@@ -208,12 +208,15 @@ class Hub(Subject):
                     and device.current_color == color
                 ):
                     break
+            else:
+                brightness = device.brightness
+                color = device.current_color
             try:
                 # TODO Verificar lógica com relação a mudança de estados durante a rotina
-                if brightness != device.brightness:
+                if brightness != device.brightness and device.state == SwitchEnum.ON:
                     cycle(brightness_value=brightness)
                     self.notify_event(**device.event_data)
-                elif color != device.current_color:
+                elif color != device.current_color and device.state == SwitchEnum.ON:
                     cycle(color=color)
                     self.notify_event(**device.event_data)
                 else:

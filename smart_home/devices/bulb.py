@@ -78,6 +78,9 @@ class Bulb(Device):
     def is_valid_color(self, event):
         return isinstance(event.kwargs.get("color"), ColorEnum)
 
+    def on_enter_OFF(self, event):
+        self.event_data["type"] = EventType.BULB_ON_ENTER_OFF
+
     def update_brightness(self, event):
         self.brightness = event.kwargs.get("brightness_value")
 
