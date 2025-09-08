@@ -1,5 +1,3 @@
-from transitions import Machine
-
 from smart_home.core.descriptors import BrightnessRange, ValidColor
 from smart_home.core.enums import ColorEnum, EventType, SwitchEnum
 from smart_home.devices.device import Device
@@ -45,18 +43,7 @@ class Bulb(Device):
             },
         ]
 
-        self.machine = Machine(
-            self,
-            states=SwitchEnum,
-            transitions=transitions,
-            initial=initial_state,
-            send_event=True,
-            prepare_event="reset_event_data",
-            after_state_change="set_current_event",
-            on_exception="on_enter_exception",
-        )
-
-        super().__init__(device_id, device_name)
+        super().__init__(device_id, device_name, SwitchEnum, transitions, initial_state)
 
     @property
     def brightness(self):

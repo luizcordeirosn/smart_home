@@ -1,5 +1,3 @@
-from transitions import Machine
-
 from smart_home.core.enums import DoorEnum, EventType
 from smart_home.devices.device import Device
 
@@ -36,18 +34,14 @@ class Door(Device):
             },
         ]
 
-        self.machine = Machine(
-            self,
-            states=DoorEnum,
-            transitions=transitions,
-            initial=initial_state,
-            send_event=True,
-            prepare_event="reset_event_data",
-            after_state_change="set_current_event",
-            on_exception="on_invalid_attempt",
+        super().__init__(
+            device_id,
+            device_name,
+            DoorEnum,
+            transitions,
+            initial_state,
+            on_exception_method="on_invalid_attempt",
         )
-
-        super().__init__(device_id, device_name)
 
     @property
     def invalid_attempts(self):

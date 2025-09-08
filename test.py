@@ -107,8 +107,8 @@ if __name__ == "__main__":
         smart_home.devices.get("camera")[0].memory_mb,
     )
 
-    # smart_home.devices.get("thermostat")[0].check_temperature()
-    # smart_home.notify_event(**smart_home.devices.get("thermostat")[0].event_data)
+    smart_home.devices.get("thermostat")[0].check_temperature()
+    smart_home.notify_event(**smart_home.devices.get("thermostat")[0].event_data)
 
     print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
@@ -143,31 +143,31 @@ if __name__ == "__main__":
     )
     print(device.state, device.brightness, device.current_color)
 
-    # smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "door", "living_room_door"
-    # )
+    smart_home.get_device_commands_by_device_type_and_device_id(
+        "door", "living_room_door"
+    )
 
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "door", "living_room_door"
-    # )
-    # print(commands)
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "bulb", "living_room_bulb"
-    # )
-    # print(commands)
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "outlet", "living_room_outlet"
-    # )
-    # print(commands)
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "sprinkler", "garden_sprinkler"
-    # )
-    # print(commands)
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "thermostat", "living_room_thermostat"
-    # )
-    # print(commands)
-    # commands = smart_home.get_device_commands_by_device_type_and_device_id(
-    #     "camera", "security_cam"
-    # )
-    # print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "door", "living_room_door"
+    )
+    print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "bulb", "living_room_bulb"
+    )
+    print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "outlet", "living_room_outlet"
+    )
+    print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "sprinkler", "garden_sprinkler"
+    )
+    print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "thermostat", "living_room_thermostat"
+    )
+    print(commands)
+    commands = smart_home.get_device_commands_by_device_type_and_device_id(
+        "camera", "security_cam"
+    )
+    print(commands)

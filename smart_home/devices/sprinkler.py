@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from transitions import Machine
-
 from smart_home.core.descriptors import PositiveValue
 from smart_home.core.enums import EventType, SprinklerStateEnum
 from smart_home.devices.device import Device
@@ -44,18 +42,9 @@ class Sprinkler(Device):
             },
         ]
 
-        self.machine = Machine(
-            model=self,
-            states=SprinklerStateEnum,
-            transitions=transitions,
-            initial=initial_state,
-            send_event=True,
-            prepare_event="reset_event_data",
-            after_state_change="set_current_event",
-            on_exception="on_enter_exception",
+        super().__init__(
+            device_id, device_name, SprinklerStateEnum, transitions, initial_state
         )
-
-        super().__init__(device_id, device_name)
 
     @property
     def flow_rate(self):

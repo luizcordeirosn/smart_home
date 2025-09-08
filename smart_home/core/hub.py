@@ -153,9 +153,7 @@ class Hub(Subject):
     def exist_device_command(self, device, command_name):
         device_attributes = device.__dir__()
 
-        if command_name in device_attributes:
-            return True
-        return False
+        return command_name in device_attributes
 
     def exec_device_comand(self, device_type, device_id, command_name, **kwargs):
         if not self.exist_device(device_type, device_id):
