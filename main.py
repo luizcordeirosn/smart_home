@@ -107,6 +107,9 @@ if __name__ == "__main__":
         smart_home.devices.get("camera")[0].memory_mb,
     )
 
+    # smart_home.devices.get("thermostat")[0].check_temperature()
+    # smart_home.notify_event(**smart_home.devices.get("thermostat")[0].event_data)
+
     print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")

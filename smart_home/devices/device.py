@@ -31,6 +31,9 @@ class Device(ABC):
     def device_name(self, value):
         self.__device_name = value
 
+    def on_enter_exception(self, event):
+        self.set_current_event(event)
+
     def set_current_event(self, event):
         self.event_data["event"] = event
         self.event_data["device_instance"] = self.__class__.__name__

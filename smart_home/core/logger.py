@@ -22,8 +22,11 @@ class Logger(Singleton):
         device_instance = kwargs.get("device_instance")
         device_id = kwargs.get("device_id")
         event = kwargs.get("event")
-        transition = event.transition
+        transition = [value for value in event.event.transitions.values()][0][0]
+        source = transition.source
+        dest = transition.dest
         trigger = kwargs.get("event").event.name
+        error = event.error
 
         fieldnames = [
             "Time",
@@ -40,9 +43,9 @@ class Logger(Singleton):
                 "Time": timestamp,
                 "Device Instance": device_instance,
                 "Device ID": device_id,
-                "Source": transition.source if transition is not None else "N/A",
-                "Destination": transition.dest if transition is not None else "N/A",
-                "Error": event.error if transition is None else "N/A",
+                "Source": source.lower(),
+                "Destination": dest.lower(),
+                "Error": error if error is not None else "N/A",
                 "Trigger": trigger,
             }
         ]

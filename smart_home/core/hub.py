@@ -159,11 +159,8 @@ class Hub(Subject):
         for cycle in door_cycle:
             if device.state == target_state:
                 break
-            try:
-                cycle()
-                self.notify_event(**device.event_data)
-            except Exception:
-                self.notify_event(**device.event_data)
+            cycle()
+            self.notify_event(**device.event_data)
 
     def change_bulbs_state(self, action):
         device_type = action.get("type")
@@ -211,19 +208,16 @@ class Hub(Subject):
             else:
                 brightness = device.brightness
                 color = device.current_color
-            try:
-                # TODO Verificar lógica com relação a mudança de estados durante a rotina
-                if brightness != device.brightness and device.state == SwitchEnum.ON:
-                    cycle(brightness_value=brightness)
-                    self.notify_event(**device.event_data)
-                elif color != device.current_color and device.state == SwitchEnum.ON:
-                    cycle(color=color)
-                    self.notify_event(**device.event_data)
-                else:
-                    cycle()
-                    self.notify_event(**device.event_data)
-            except Exception:
-                pass
+            # TODO Verificar lógica com relação a mudança de estados durante a rotina
+            if brightness != device.brightness and device.state == SwitchEnum.ON:
+                cycle(brightness_value=brightness)
+                self.notify_event(**device.event_data)
+            elif color != device.current_color and device.state == SwitchEnum.ON:
+                cycle(color=color)
+                self.notify_event(**device.event_data)
+            else:
+                cycle()
+                self.notify_event(**device.event_data)
 
     def change_outlets_state(self, action):
         device_type = action.get("type")
@@ -249,11 +243,8 @@ class Hub(Subject):
         for cycle in outlet_cycle:
             if device.state == target_state:
                 break
-            try:
-                cycle()
-                self.notify_event(**device.event_data)
-            except Exception:
-                pass
+            cycle()
+            self.notify_event(**device.event_data)
 
     def change_sprinklers_state(self, action):
         device_type = action.get("type")
@@ -281,11 +272,8 @@ class Hub(Subject):
         for cycle in sprinkler_cycle:
             if device.state == target_state:
                 break
-            try:
-                cycle()
-                self.notify_event(**device.event_data)
-            except Exception:
-                pass
+            cycle()
+            self.notify_event(**device.event_data)
 
     def change_thermostats_state(self, action):
         device_type = action.get("type")
@@ -323,24 +311,20 @@ class Hub(Subject):
                     and device.current_temperature == target_temperature
                 ):
                     break
-            try:
-                # TODO Verificar lógica com relação a mudança de estados durante a rotina
-                if target_state == ThermostatStateEnum.IDLE:
-                    cycle(target_temperature=target_temperature)
-                    self.notify_event(**device.event_data)
-                elif target_state == ThermostatStateEnum.COOLING:
-                    device.current_temperature += 1
-                    cycle(target_temperature=target_temperature)
-                    self.notify_event(**device.event_data)
-                elif target_state == ThermostatStateEnum.HEATING:
-                    device.current_temperature -= 1
-                    cycle(target_temperature=target_temperature)
-                    self.notify_event(**device.event_data)
-                else:
-                    cycle()
-                    self.notify_event(**device.event_data)
-            except Exception:
-                pass
+            if target_state == ThermostatStateEnum.IDLE:
+                cycle(target_temperature=target_temperature)
+                self.notify_event(**device.event_data)
+            elif target_state == ThermostatStateEnum.COOLING:
+                device.current_temperature += 1
+                cycle(target_temperature=target_temperature)
+                self.notify_event(**device.event_data)
+            elif target_state == ThermostatStateEnum.HEATING:
+                device.current_temperature -= 1
+                cycle(target_temperature=target_temperature)
+                self.notify_event(**device.event_data)
+            else:
+                cycle()
+                self.notify_event(**device.event_data)
 
     def change_cameras_state(self, action):
         device_type = action.get("type")
@@ -368,11 +352,8 @@ class Hub(Subject):
         for cycle in cameras_cycle:
             if device.state == target_state:
                 break
-            try:
-                cycle()
-                self.notify_event(**device.event_data)
-            except Exception:
-                pass
+            cycle()
+            self.notify_event(**device.event_data)
 
     def publish_event(self, **kwargs):
         self.notify_event(**kwargs)

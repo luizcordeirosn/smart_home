@@ -52,6 +52,7 @@ class Sprinkler(Device):
             send_event=True,
             prepare_event="reset_event_data",
             after_state_change="set_current_event",
+            on_exception="on_enter_exception",
         )
 
         super().__init__(device_id, device_name)
