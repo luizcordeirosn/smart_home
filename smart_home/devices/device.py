@@ -36,3 +36,6 @@ class Device(ABC):
         self.event_data["device_instance"] = self.__class__.__name__
         self.event_data["device_id"] = self.device_id
         self.event_data["device_name"] = self.device_name
+
+    def reset_event_data(self, event):
+        self.event_data = {}

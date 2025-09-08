@@ -47,6 +47,7 @@ class Camera(Device):
             transitions=transitions,
             initial=initial_state,
             send_event=True,
+            prepare_event="reset_event_data",
             after_state_change="set_current_event",
         )
 

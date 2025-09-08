@@ -44,6 +44,7 @@ class Door(Device):
             initial=initial_state,
             on_exception="on_invalid_attempt",
             send_event=True,
+            prepare_event="reset_event_data",
             after_state_change="set_current_event",
         )
 

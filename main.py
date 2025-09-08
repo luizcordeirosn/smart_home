@@ -109,27 +109,21 @@ if __name__ == "__main__":
 
     print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
-        # print(f"__{device_type}__")
+        print(f"__{device_type}__")
         for device in devices:
-            if device_type == "bulb":
-                print(
-                    device.state,
-                    device.device_name,
-                    # device.brightness,
-                    # device.current_color,
-                )
+            print(
+                device.state,
+                device.device_name,
+            )
 
     smart_home.exec_routine("good_night")
 
     print("___")
 
     for device_type, devices in smart_home.devices.items():
-        # print(f"__{device_type}__")
+        print(f"__{device_type}__")
         for device in devices:
-            if device_type == "bulb":
-                print(
-                    device.state,
-                    device.device_name,
-                    # device.brightness,
-                    # device.current_color,
-                )
+            print(
+                device.state,
+                device.device_name,
+            )

@@ -51,7 +51,6 @@ class EventType(Enum):
     DOOR_ON_INVALID_ATTEMPT = auto()
     BULB_UPDATE_BRIGHTNESS = auto()
     BULB_UPDATE_COLOR = auto()
-    BULB_ON_ENTER_OFF = auto()
     OUTLET_ON_ENTER_OFF = auto()
     SPRINKLER_ON_EXIT_WATERING = auto()
     THERMOSTAT_ON_ENTER_IDLE = auto()
