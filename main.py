@@ -1,32 +1,6 @@
+from smart_home.core.enums import DoorEnum, SwitchEnum
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
-from smart_home.devices.bulb import Bulb
-from smart_home.devices.camera import Camera
-from smart_home.devices.door import Door
-from smart_home.devices.outlet import Outlet
-from smart_home.devices.sprinkler import Sprinkler
-from smart_home.devices.thermostat import Thermostat
-
-
-def setup_devices_hub(smart_home):
-    for _ in range(5):
-        smart_home.add_devices("door", Door())
-
-    for _ in range(20):
-        smart_home.add_devices("bulb", Bulb())
-
-    for _ in range(10):
-        smart_home.add_devices("outlet", Outlet())
-
-    for _ in range(3):
-        smart_home.add_devices("sprinkler", Sprinkler())
-
-    for _ in range(2):
-        smart_home.add_devices("thermostat", Thermostat())
-
-    for _ in range(3):
-        smart_home.add_devices("camera", Camera(memory_mb=2000))
-
 
 if __name__ == "__main__":
     print("__HUB__")
@@ -36,7 +10,101 @@ if __name__ == "__main__":
 
     smart_home.add_observer(event_handler)
 
-    setup_devices_hub(smart_home)
+    smart_home.add_devices(
+        device_id="entrance_door",
+        device_type="door",
+        initial_state=DoorEnum.OPENED,
+    )
+
+    smart_home.add_devices(
+        device_id="living_room_door",
+        device_name="Living Room Door",
+        device_type="door",
+        initial_state=DoorEnum.OPENED,
+    )
+
+    smart_home.add_devices(
+        device_id="living_room_bulb",
+        device_type="bulb",
+        device_name="Living Room Bulb",
+        initial_state=SwitchEnum.ON,
+    )
+
+    smart_home.add_devices(
+        device_id="living_room_outlet",
+        device_type="outlet",
+        power_w=750,
+    )
+
+    smart_home.add_devices(
+        device_id="garden_sprinkler",
+        device_type="sprinkler",
+        flow_rate=20,
+    )
+
+    smart_home.add_devices(
+        device_id="living_room_thermostat",
+        device_type="thermostat",
+    )
+
+    smart_home.add_devices(
+        device_id="security_cam",
+        device_type="camera",
+        memory_mb=3000,
+    )
+
+    print("__DOOR__")
+    print(
+        smart_home.devices.get("door")[0].state,
+        smart_home.devices.get("door")[0].device_id,
+        smart_home.devices.get("door")[0].device_name,
+    )
+    print(
+        smart_home.devices.get("door")[1].state,
+        smart_home.devices.get("door")[1].device_id,
+        smart_home.devices.get("door")[1].device_name,
+    )
+
+    print("__BULB__")
+    print(
+        smart_home.devices.get("bulb")[0].state,
+        smart_home.devices.get("bulb")[0].device_id,
+        smart_home.devices.get("bulb")[0].device_name,
+        smart_home.devices.get("bulb")[0].brightness,
+        smart_home.devices.get("bulb")[0].current_color,
+    )
+
+    print("__OUTLET__")
+    print(
+        smart_home.devices.get("outlet")[0].state,
+        smart_home.devices.get("outlet")[0].device_id,
+        smart_home.devices.get("outlet")[0].device_name,
+        smart_home.devices.get("outlet")[0].power_w,
+    )
+
+    print("__SPRINKLER__")
+    print(
+        smart_home.devices.get("sprinkler")[0].state,
+        smart_home.devices.get("sprinkler")[0].device_id,
+        smart_home.devices.get("sprinkler")[0].device_name,
+        smart_home.devices.get("sprinkler")[0].flow_rate,
+    )
+
+    print("__THERMOSTAT__")
+    print(
+        smart_home.devices.get("thermostat")[0].state,
+        smart_home.devices.get("thermostat")[0].device_id,
+        smart_home.devices.get("thermostat")[0].device_name,
+        smart_home.devices.get("thermostat")[0].current_temperature,
+    )
+
+    print("__CAMERA__")
+    print(
+        smart_home.devices.get("camera")[0].state,
+        smart_home.devices.get("camera")[0].device_id,
+        smart_home.devices.get("camera")[0].device_name,
+        smart_home.devices.get("camera")[0].memory_mb,
+    )
 
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")

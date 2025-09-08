@@ -20,6 +20,7 @@ class Logger(Singleton):
     def save_log_to_csv(self, **kwargs):
         timestamp = datetime.now()
         device_instance = kwargs.get("device_instance")
+        device_id = kwargs.get("device_id")
         event = kwargs.get("event")
         transition = event.transition
         trigger = kwargs.get("event").event.name
@@ -27,6 +28,7 @@ class Logger(Singleton):
         fieldnames = [
             "Time",
             "Device Instance",
+            "Device ID",
             "Source",
             "Destination",
             "Error",
@@ -37,6 +39,7 @@ class Logger(Singleton):
             {
                 "Time": timestamp,
                 "Device Instance": device_instance,
+                "Device ID": device_id,
                 "Source": transition.source if transition is not None else "N/A",
                 "Destination": transition.dest if transition is not None else "N/A",
                 "Error": event.error if transition is None else "N/A",
@@ -51,6 +54,7 @@ class Logger(Singleton):
         message = kwargs.get("handler_message").split(" - ")
         level = message[0]
         device_instance = kwargs.get("device_instance")
+        device_id = kwargs.get("device_id")
         device_name = kwargs.get("device_name")
         message = message[1]
 
@@ -58,6 +62,7 @@ class Logger(Singleton):
             "Time",
             "Level",
             "Device Instance",
+            "Device ID",
             "Device Name",
             "Message",
         ]
@@ -67,6 +72,7 @@ class Logger(Singleton):
                 "Time": timestamp,
                 "Level": level,
                 "Device Instance": device_instance,
+                "Device ID": device_id,
                 "Device Name": device_name,
                 "Message": message,
             }

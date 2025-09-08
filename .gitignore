@@ -1,5 +1,5 @@
 # Data files
-/smart_home/data/events_log_example.csv
-/smart_home/data/devices_report.csv
+smart_home/data/events_log_example.csv
+smart_home/data/devices_report.csv
 
 /venv

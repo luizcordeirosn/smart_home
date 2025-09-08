@@ -10,6 +10,7 @@ class Camera(Device):
 
     def __init__(
         self,
+        device_id,
         device_name="Default Camera",
         initial_state=CameraStateEnum.OFF,
         memory_mb=2000,
@@ -49,7 +50,7 @@ class Camera(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__(device_name)
+        super().__init__(device_id, device_name)
 
     @property
     def memory_mb(self):

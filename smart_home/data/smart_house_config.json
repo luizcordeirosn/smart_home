@@ -4,54 +4,54 @@
     "leaving_home": [
       {
         "type": "door",
-        "indices": [2, 4],
+        "device_id": "entrance_door",
         "target_state": "LOCKED"
       },
       {
         "type": "bulb",
-        "indices": "all",
+        "device_id": "living_room_bulb",
         "target_state": "OFF"
       },
       {
         "type": "outlet",
-        "indices": "all",
+        "device_id": "living_room_outlet",
         "target_state": "OFF"
       },
       {
         "type": "thermostat",
-        "indices": [0],
-        "target_state": "HEATING",
-        "target_temperature": 28.0
+        "device_id": "living_room_thermostat",
+        "target_state": "IDLE",
+        "target_temperature": 25.0
       },
       {
         "type": "sprinkler",
-        "indices": "all",
+        "device_id": "garden_sprinkler",
         "target_state": "WATERING"
       },
       {
         "type": "camera",
-        "indices": "all",
+        "device_id": "security_cam",
         "target_state": "RECORDING"
       }
     ],
     "good_night": [
       {
         "type": "door",
-        "indices": "all",
+        "device_id": "living_room_door",
         "target_state": "LOCKED"
       },
       {
         "type": "bulb",
-        "indices": [0, 3],
+        "device_id": "living_room_bulb",
         "target_state": "ON",
         "attributes": {
           "brightness": 30,
-          "color": "DAYLIGHT"
+          "color": "COOL"
         }
       },
       {
         "type": "thermostat",
-        "indices": [0],
+        "device_id": "living_room_thermostat",
         "target_state": "COOLING",
         "attributes": {
           "target_temperature": 18
@@ -59,8 +59,8 @@
       },
       {
         "type": "camera",
-        "indices": "all",
-        "target_state": "OFF"
+        "device_id": "security_cam",
+        "target_state": "RECORDING"
       }
     ]
   }

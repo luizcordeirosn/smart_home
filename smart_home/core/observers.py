@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 
 from smart_home.core.enums import EventType
 from smart_home.core.logger import Logger

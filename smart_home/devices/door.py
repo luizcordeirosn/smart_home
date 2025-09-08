@@ -7,7 +7,10 @@ from smart_home.devices.device import Device
 
 class Door(Device):
     def __init__(
-        self, device_name="Default Door", initial_state: DoorEnum = DoorEnum.UNLOCKED
+        self,
+        device_id,
+        device_name="Default Door",
+        initial_state: DoorEnum = DoorEnum.UNLOCKED,
     ):
         self.__invalid_attempts: int = 0
 
@@ -44,7 +47,7 @@ class Door(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__(device_name)
+        super().__init__(device_id, device_name)
 
     @property
     def invalid_attempts(self):

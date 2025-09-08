@@ -2,12 +2,19 @@ from abc import ABC
 
 from smart_home.core.enums import (
     CameraStateEnum,
+    ColorEnum,
     DoorEnum,
     SprinklerStateEnum,
     SwitchEnum,
     ThermostatStateEnum,
 )
 from smart_home.core.logger import Logger
+from smart_home.devices.bulb import Bulb
+from smart_home.devices.camera import Camera
+from smart_home.devices.door import Door
+from smart_home.devices.outlet import Outlet
+from smart_home.devices.sprinkler import Sprinkler
+from smart_home.devices.thermostat import Thermostat
 
 
 class Subject(ABC):
@@ -40,9 +47,18 @@ class Hub(Subject):
             "thermostat": self.change_thermostats_state,
             "camera": self.change_cameras_state,
         }
+        self.__class_map = {
+            "door": Door,
+            "bulb": Bulb,
+            "outlet": Outlet,
+            "sprinkler": Sprinkler,
+            "thermostat": Thermostat,
+            "camera": Camera,
+        }
         self.__enum_map = {
             "door": DoorEnum,
             "bulb": SwitchEnum,
+            "bulb_color": ColorEnum,
             "outlet": SwitchEnum,
             "sprinkler": SprinklerStateEnum,
             "thermostat": ThermostatStateEnum,
@@ -68,18 +84,48 @@ class Hub(Subject):
         return self.__routine_handlers
 
     @property
+    def class_map(self):
+        return self.__class_map
+
+    @property
     def enum_map(self):
         return self.__enum_map
 
-    def add_devices(self, name, device):
-        device_list = self.devices.get(name, [])
+    def add_devices(self, device_id, device_type, **kwargs):
+        device_list = self.devices.get(device_type, [])
+
+        exist_device = self.exist_device(device_type, device_id)
+
+        if exist_device:
+            raise ValueError(
+                f"Device of type '{device_type}' with ID '{device_id}' already exists."
+            )
+
+        device_class = self.class_map.get(device_type)
+        device = device_class(device_id, **kwargs)
 
         device_list.append(device)
 
-        self.devices[name] = device_list
+        self.devices[device_type] = device_list
 
-    def publish_event(self, **kwargs):
-        self.notify_event(**kwargs)
+    def get_routine_by_device_type_and_device_id(self, device_type, device_id):
+        devices = list(
+            filter(
+                lambda d: d.device_id == device_id, self.devices.get(device_type, [])
+            )
+        )
+
+        if len(devices) == 1:
+            return devices[0]
+
+    def exist_device(self, device_type, device_id):
+        device = list(
+            filter(
+                lambda d: d.device_id == device_id, self.devices.get(device_type, [])
+            )
+        )
+
+        return len(device) > 0
 
     def exec_routine(self, routine_name):
         routine = self.routines.get(routine_name)
@@ -94,225 +140,236 @@ class Hub(Subject):
 
     def change_doors_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        devices = self.devices.get(device_type)
+        device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        if device is None:
+            return
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            door_cycle = [device.close, device.lock, device.unlock, device.open]
+        door_cycle = [device.close, device.lock, device.unlock, device.open]
 
-            for cycle in door_cycle:
-                if device.state == target_state:
-                    break
-                try:
-                    cycle()
-                except Exception:
-                    pass
+        for cycle in door_cycle:
+            if device.state == target_state:
+                break
+            try:
+                cycle()
+                self.notify_event(**device.event_data)
+            except Exception:
+                self.notify_event(**device.event_data)
 
     def change_bulbs_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
         attributes = action.get("attributes")
-        devices = self.devices.get(device_type)
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            bulb_cycle = [
-                device.turn_on,
-                device.set_brightness,
-                device.set_color,
-                device.turn_off,
-            ]
+        if device is None:
+            return
 
-            for cycle in bulb_cycle:
-                if device.state == target_state and attributes is None:
+        bulb_cycle = [
+            device.turn_on,
+            device.set_brightness,
+            device.set_color,
+            device.turn_off,
+        ]
+
+        for cycle in bulb_cycle:
+            if device.state == target_state and attributes is None:
+                break
+            if attributes is not None:
+                brightness = attributes.get("brightness", device.brightness)
+
+                color = attributes.get("color", device.current_color)
+
+                if not isinstance(color, ColorEnum):
+                    color_enum = self.enum_map.get("bulb_color")
+                    color = color_enum[color]
+
+                if (
+                    device.state == target_state
+                    and device.brightness == brightness
+                    and device.current_color == color
+                ):
                     break
-                if attributes is not None:
-                    brightness = attributes.get("brightness", device.brightness)
-                    color = attributes.get("color", device.current_color)
-                    if (
-                        device.state == target_state
-                        and device.brightness == brightness
-                        and device.current_color == color
-                    ):
-                        break
-                try:
-                    if brightness != device.brightness:
-                        cycle(brightness_value=brightness)
-                    elif color != device.current_color:
-                        cycle(color=color)
+            try:
+                # TODO Verificar lógica com relação a mudança de estados durante a rotina
+                if brightness != device.brightness:
+                    cycle(brightness_value=brightness)
+                    self.notify_event(**device.event_data)
+                elif color != device.current_color:
+                    cycle(color=color)
+                    self.notify_event(**device.event_data)
+                else:
                     cycle()
-                except Exception:
-                    pass
+                    self.notify_event(**device.event_data)
+            except Exception:
+                pass
 
     def change_outlets_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        devices = self.devices.get(device_type)
+        device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        if device is None:
+            return
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            outlet_cycle = [device.turn_off, device.turn_on]
+        outlet_cycle = [
+            device.turn_off,
+            device.turn_on,
+        ]
 
-            for cycle in outlet_cycle:
-                if device.state == target_state:
-                    break
-                try:
-                    cycle()
-                except Exception:
-                    pass
+        for cycle in outlet_cycle:
+            if device.state == target_state:
+                break
+            try:
+                cycle()
+                self.notify_event(**device.event_data)
+            except Exception:
+                pass
 
     def change_sprinklers_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        devices = self.devices.get(device_type)
+        device = device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        if device is None:
+            return
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            sprinkler_cycle = [
-                device.turn_on,
-                device.pause_watering,
-                device.resume_watering,
-                device.stop_watering,
-            ]
+        sprinkler_cycle = [
+            device.turn_on,
+            device.pause_watering,
+            device.resume_watering,
+            device.stop_watering,
+        ]
 
-            for cycle in sprinkler_cycle:
-                if device.state == target_state:
-                    break
-                try:
-                    cycle()
-                except Exception:
-                    pass
+        for cycle in sprinkler_cycle:
+            if device.state == target_state:
+                break
+            try:
+                cycle()
+                self.notify_event(**device.event_data)
+            except Exception:
+                pass
 
     def change_thermostats_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
         attributes = action.get("attributes")
-        devices = self.devices.get(device_type)
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        device = device = device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            thermostat_cycle = [
-                device.turn_on,
-                device.check_temperature,
-                device.turn_off,
-            ]
+        if device is None:
+            return
 
-            for cycle in thermostat_cycle:
-                if device.state == target_state and attributes is None:
+        thermostat_cycle = [
+            device.turn_on,
+            device.check_temperature,
+            device.turn_off,
+        ]
+
+        for cycle in thermostat_cycle:
+            if device.state == target_state and attributes is None:
+                break
+            if attributes is not None:
+                target_temperature = attributes.get(
+                    "target_temperature", device.current_temperature
+                )
+                if (
+                    device.state == target_state
+                    and device.current_temperature == target_temperature
+                ):
                     break
-                if attributes is not None:
-                    target_temperature = attributes.get(
-                        "target_temperature", device.current_temperature
-                    )
-                    if (
-                        device.state == target_state
-                        and device.current_temperature == target_temperature
-                    ):
-                        break
-                try:
-                    if target_state == ThermostatStateEnum.IDLE:
-                        cycle(target_temperature=target_temperature)
-                    elif target_state == ThermostatStateEnum.COOLING:
-                        device.current_temperature += 1
-                        cycle(target_temperature=target_temperature)
-                    elif target_state == ThermostatStateEnum.HEATING:
-                        device.current_temperature -= 1
-                        cycle(target_temperature=target_temperature)
+            try:
+                # TODO Verificar lógica com relação a mudança de estados durante a rotina
+                if target_state == ThermostatStateEnum.IDLE:
+                    cycle(target_temperature=target_temperature)
+                    self.notify_event(**device.event_data)
+                elif target_state == ThermostatStateEnum.COOLING:
+                    device.current_temperature += 1
+                    cycle(target_temperature=target_temperature)
+                    self.notify_event(**device.event_data)
+                elif target_state == ThermostatStateEnum.HEATING:
+                    device.current_temperature -= 1
+                    cycle(target_temperature=target_temperature)
+                    self.notify_event(**device.event_data)
+                else:
                     cycle()
-                except Exception:
-                    pass
+                    self.notify_event(**device.event_data)
+            except Exception:
+                pass
 
     def change_cameras_state(self, action):
         device_type = action.get("type")
-        indices = action.get("indices")
+        device_id = action.get("device_id")
 
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
 
-        devices = self.devices.get(device_type)
+        device = device = device = self.get_routine_by_device_type_and_device_id(
+            device_type,
+            device_id,
+        )
 
-        if indices == "all":
-            interval = (0, len(devices))
-        elif len(indices) == 1:
-            interval = (indices[0], indices[0] + 1)
-        else:
-            interval = (indices[0], indices[1])
+        if device is None:
+            return
 
-        for i in range(interval[0], interval[1]):
-            device = devices[i]
-            cameras_cycle = [
-                device.turn_on,
-                device.record,
-                device.stop_recording,
-                device.turn_off,
-            ]
+        cameras_cycle = [
+            device.turn_on,
+            device.record,
+            device.stop_recording,
+            device.turn_off,
+        ]
 
-            for cycle in cameras_cycle:
-                if device.state == target_state:
-                    break
-                try:
-                    cycle()
-                except Exception:
-                    pass
+        for cycle in cameras_cycle:
+            if device.state == target_state:
+                break
+            try:
+                cycle()
+                self.notify_event(**device.event_data)
+            except Exception:
+                pass
+
+    def publish_event(self, **kwargs):
+        self.notify_event(**kwargs)

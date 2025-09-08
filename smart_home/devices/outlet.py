@@ -12,6 +12,7 @@ class Outlet(Device):
 
     def __init__(
         self,
+        device_id,
         device_name="Default Outlet",
         power_w: int = 600,
         initial_state=SwitchEnum.OFF,
@@ -42,7 +43,7 @@ class Outlet(Device):
             after_state_change="set_current_event",
         )
 
-        super().__init__(device_name)
+        super().__init__(device_id, device_name)
 
     @property
     def power_w(self):
