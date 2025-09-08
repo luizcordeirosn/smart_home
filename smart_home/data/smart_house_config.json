@@ -21,7 +21,9 @@
         "type": "thermostat",
         "device_id": "living_room_thermostat",
         "target_state": "IDLE",
-        "target_temperature": 25.0
+        "attributes": {
+          "target_temperature": 25.0
+        }
       },
       {
         "type": "sprinkler",

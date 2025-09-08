@@ -119,7 +119,7 @@ if __name__ == "__main__":
                 device.device_name,
             )
 
-    smart_home.exec_routine("good_night")
+    smart_home.exec_routine("leaving_home")
 
     print("___")
 
@@ -136,7 +136,10 @@ if __name__ == "__main__":
     )
     print(device.state, device.brightness, device.current_color)
     smart_home.exec_device_comand(
-        "bulb", "living_room_bulb", "set_color", color=ColorEnum.DAYLIGHT
+        "thermostat",
+        "living_room_thermostat",
+        "check_temperature",
+        target_temperature=30.0,
     )
     device = smart_home.get_device_by_device_type_and_device_id(
         "bulb", "living_room_bulb"

@@ -63,13 +63,28 @@ class Thermostat(Device):
         self.__current_temperature = value
 
     def is_too_cold(self, event):
-        return self.current_temperature < event.kwargs.get("target_temperature")
+        target_temperature = event.kwargs.get("target_temperature")
+
+        if target_temperature is None:
+            raise ValueError("target_temperature argument is missing")
+
+        return self.current_temperature < target_temperature
 
     def is_too_hot(self, event):
-        return self.current_temperature > event.kwargs.get("target_temperature")
+        target_temperature = event.kwargs.get("target_temperature")
+
+        if target_temperature is None:
+            raise ValueError("target_temperature argument is missing")
+
+        return self.current_temperature > target_temperature
 
     def is_temperature_ok(self, event):
-        return self.current_temperature == event.kwargs.get("target_temperature")
+        target_temperature = event.kwargs.get("target_temperature")
+
+        if target_temperature is None:
+            raise ValueError("target_temperature argument is missing")
+
+        return self.current_temperature == target_temperature
 
     def on_enter_IDLE(self, event):
         self.current_temperature = event.kwargs.get("target_temperature")
