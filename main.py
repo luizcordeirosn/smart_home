@@ -5,9 +5,11 @@ if __name__ == "__main__":
     print("__HUB__")
 
     smart_home = Hub()
-    event_handler = EventHandler()
 
-    smart_home.add_observer(event_handler)
+    smart_home.add_observer(EventHandler())
+
+    smart_home.exec_device_comand("bulb", "living_room_bulb", "turn_on")
+    smart_home.exec_device_comand("bulb", "living_room_bulb", "set_brightness")
 
     for device_type, devices in smart_home.devices.items():
         print(f"__{device_type}__")
@@ -16,5 +18,3 @@ if __name__ == "__main__":
                 device.state,
                 device.device_name,
             )
-            if device_type == "sprinkler":
-                print(device.start_usage_time)

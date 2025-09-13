@@ -33,6 +33,9 @@ class SprinklerStateEnum(Enum):
     WATERING = auto()
     PAUSED = auto()
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class ThermostatStateEnum(Enum):
     OFF = auto()
@@ -40,11 +43,17 @@ class ThermostatStateEnum(Enum):
     HEATING = auto()
     COOLING = auto()
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class CameraStateEnum(Enum):
     OFF = auto()
     IDLE = auto()
     RECORDING = auto()
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class EventType(Enum):

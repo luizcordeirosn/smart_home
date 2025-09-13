@@ -90,3 +90,6 @@ class Sprinkler(Device):
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
         self.event_data["usage_lh"] = self.usage_lh
+
+    def __repr__(self):
+        return f"{self.device_name} | {self.state} | {self.flow_rate} | {self.usage_lh}"

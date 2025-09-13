@@ -96,3 +96,6 @@ class Bulb(Device):
 
         self.event_data["type"] = EventType.BULB_UPDATE_COLOR
         self.event_data["current_color"] = self.current_color
+
+    def __repr__(self):
+        return f"{self.device_id} | {self.device_name} | {self.brightness} | {self.current_color.name}"

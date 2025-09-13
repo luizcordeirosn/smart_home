@@ -69,3 +69,6 @@ class Camera(Device):
 
         self.event_data["type"] = EventType.CAMERA_ON_EXIT_RECORDING
         self.event_data["memory_mb"] = self.memory_mb
+
+    def __repr__(self):
+        return f"{self.device_name} | {self.memory_mb}"

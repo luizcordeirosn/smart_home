@@ -1,4 +1,3 @@
-from smart_home.core.enums import ColorEnum, DoorEnum, SwitchEnum, ThermostatStateEnum
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
 
@@ -177,4 +176,4 @@ if __name__ == "__main__":
 
     print("__")
 
-    smart_home.get_devices_as_dict()
+    device = smart_home.get_device_by_device_type_and_device_id("door", "entrance_door")

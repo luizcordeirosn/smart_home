@@ -15,7 +15,7 @@ class Outlet(Device):
         power_w: int = 600,
         initial_state: str = "OFF",
     ):
-        self.power_w = power_w
+        self.__power_w = power_w
         self.__usage_wh = 0
         self.__start_usage_time = None
 
@@ -80,3 +80,6 @@ class Outlet(Device):
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
         self.event_data["usage_wh"] = self.usage_wh
+
+    def __repr__(self):
+        return f"{self.device_name} | {self.state} | {self.power_w} | {self.usage_wh}"

@@ -77,7 +77,7 @@ class Hub(Subject):
         self.__routines = configs.get("routines")
         self.__devices = {}
 
-        self.set_devices_from_dict(configs.get("devices", []))
+        self.parse_from_dict_list_to_devices(configs.get("devices", []))
 
         super().__init__()
 
@@ -104,9 +104,7 @@ class Hub(Subject):
     def add_device(self, device_id, device_type, **kwargs):
         device_list = self.devices.get(device_type, [])
 
-        exist_device = self.exist_device(device_type, device_id)
-
-        if exist_device:
+        if self.exist_device(device_type, device_id):
             raise DeviceIndexError(device_type=device_type, device_id=device_id)
 
         device_class = self.class_map.get(device_type)
@@ -119,19 +117,18 @@ class Hub(Subject):
         return device
 
     def get_device_by_device_type_and_device_id(self, device_type, device_id):
+        if not self.exist_device(device_type, device_id):
+            raise DeviceNotFoundError(device_type=device_type, device_id=device_id)
+
         devices = list(
             filter(
                 lambda d: d.device_id == device_id, self.devices.get(device_type, [])
             )
         )
 
-        if len(devices) == 1:
-            return devices[0]
+        return devices[0]
 
     def get_device_commands_by_device_type_and_device_id(self, device_type, device_id):
-        if not self.exist_device(device_type, device_id):
-            raise DeviceNotFoundError(device_type=device_type, device_id=device_id)
-
         device = self.get_device_by_device_type_and_device_id(device_type, device_id)
 
         len_device_enum = len(self.enum_map.get(device_type))
@@ -146,7 +143,20 @@ class Hub(Subject):
 
         return routine
 
-    def get_devices_as_dict(self):
+    def get_devices(self):
+        print("ID | Type | State")
+        for device_type, devices in self.devices.items():
+            for device in devices:
+                print(f"{device.device_id} | {device_type.upper()} | {device.state} ")
+
+    def delete_device_by_device_type_and_device_id(self, device_type, device_id):
+        device = self.get_device_by_device_type_and_device_id(device_type, device_id)
+
+        devices_type = self.devices.get("device_type")
+
+        devices_type.remove(device)
+
+    def parse_from_devices_to_dict_list(self):
         devices = [
             device.as_dict() for value in self.devices.values() for device in value
         ]
@@ -155,7 +165,7 @@ class Hub(Subject):
 
         logger.save_devices_to_json(devices)
 
-    def set_devices_from_dict(self, devices):
+    def parse_from_dict_list_to_devices(self, devices):
         for device in devices:
             device_type = device.get("type")
             device_id = device.get("device_id")
@@ -199,6 +209,7 @@ class Hub(Subject):
         device.__getattribute__(command_name)(**kwargs)
 
         event = device.event_data.get("event")
+        self.notify(**device.event_data)
 
         if event.error is not None:
             raise DeviceMachineTriggerError(event=event, trigger=event.event.name)
