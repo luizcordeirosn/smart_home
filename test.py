@@ -10,45 +10,45 @@ if __name__ == "__main__":
 
     smart_home.add_observer(event_handler)
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="entrance_door",
         device_type="door",
-        initial_state=DoorEnum.OPENED,
+        initial_state="OPENED",
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="living_room_door",
         device_name="Living Room Door",
         device_type="door",
-        initial_state=DoorEnum.OPENED,
+        initial_state="OPENED",
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="living_room_bulb",
         device_type="bulb",
         device_name="Living Room Bulb",
-        initial_state=SwitchEnum.ON,
+        initial_state="ON",
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="living_room_outlet",
         device_type="outlet",
         power_w=750,
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="garden_sprinkler",
         device_type="sprinkler",
         flow_rate=20,
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="living_room_thermostat",
         device_type="thermostat",
-        initial_state=ThermostatStateEnum.OFF,
+        initial_state="OFF",
     )
 
-    smart_home.add_devices(
+    smart_home.add_device(
         device_id="security_cam",
         device_type="camera",
         memory_mb=3000,
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     )
 
     smart_home.devices.get("thermostat")[0].check_temperature()
-    smart_home.notify_event(**smart_home.devices.get("thermostat")[0].event_data)
+    smart_home.notify(**smart_home.devices.get("thermostat")[0].event_data)
 
     print("__EXEC_ROUTINE__")
     for device_type, devices in smart_home.devices.items():
@@ -174,3 +174,7 @@ if __name__ == "__main__":
         "camera", "security_cam"
     )
     print(commands)
+
+    print("__")
+
+    smart_home.get_devices_as_dict()

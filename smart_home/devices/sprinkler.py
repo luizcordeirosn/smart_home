@@ -12,7 +12,7 @@ class Sprinkler(Device):
         self,
         device_id,
         device_name="Default Sprinkler",
-        initial_state: SprinklerStateEnum = SprinklerStateEnum.IDLE,
+        initial_state: str = "IDLE",
         flow_rate: int = 15,
     ):
         self.flow_rate = flow_rate
@@ -43,7 +43,11 @@ class Sprinkler(Device):
         ]
 
         super().__init__(
-            device_id, device_name, SprinklerStateEnum, transitions, initial_state
+            device_id,
+            device_name,
+            SprinklerStateEnum,
+            transitions,
+            SprinklerStateEnum[initial_state],
         )
 
     @property
@@ -68,6 +72,8 @@ class Sprinkler(Device):
 
     @start_usage_time.setter
     def start_usage_time(self, value):
+        if isinstance(value, str):
+            value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         self.__start_usage_time = value
 
     def on_enter_WATERING(self, event):

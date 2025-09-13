@@ -5,9 +5,9 @@ from smart_home.devices.device import Device
 class Door(Device):
     def __init__(
         self,
-        device_id,
-        device_name="Default Door",
-        initial_state: DoorEnum = DoorEnum.UNLOCKED,
+        device_id: str,
+        device_name: str = "Default Door",
+        initial_state: str = "UNLOCKED",
     ):
         self.__invalid_attempts: int = 0
 
@@ -39,7 +39,7 @@ class Door(Device):
             device_name,
             DoorEnum,
             transitions,
-            initial_state,
+            DoorEnum[initial_state],
             on_exception_method="on_invalid_attempt",
         )
 

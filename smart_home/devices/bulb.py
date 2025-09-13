@@ -9,12 +9,12 @@ class Bulb(Device):
 
     def __init__(
         self,
-        device_id,
-        device_name="Default Bulb",
-        initial_state: SwitchEnum = SwitchEnum.OFF,
+        device_id: str,
+        device_name: str = "Default Bulb",
+        initial_state: str = "OFF",
     ):
-        self.__brightness = 75
-        self.__current_color = ColorEnum.NEUTRAL
+        self.__brightness: int = 75
+        self.__current_color: ColorEnum = ColorEnum.NEUTRAL
 
         transitions = [
             {
@@ -43,7 +43,13 @@ class Bulb(Device):
             },
         ]
 
-        super().__init__(device_id, device_name, SwitchEnum, transitions, initial_state)
+        super().__init__(
+            device_id,
+            device_name,
+            SwitchEnum,
+            transitions,
+            SwitchEnum[initial_state],
+        )
 
     @property
     def brightness(self):
@@ -59,6 +65,8 @@ class Bulb(Device):
 
     @current_color.setter
     def current_color(self, value):
+        if isinstance(value, str):
+            value = ColorEnum[value]
         self.__current_color = value
 
     def is_brightness_in_range(self, event):

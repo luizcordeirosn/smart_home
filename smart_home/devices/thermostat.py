@@ -7,7 +7,7 @@ class Thermostat(Device):
         self,
         device_id,
         device_name="Default Thermostat",
-        initial_state=ThermostatStateEnum.OFF,
+        initial_state="OFF",
     ):
         self.__current_temperature = 0.0
 
@@ -51,7 +51,11 @@ class Thermostat(Device):
         ]
 
         super().__init__(
-            device_id, device_name, ThermostatStateEnum, transitions, initial_state
+            device_id,
+            device_name,
+            ThermostatStateEnum,
+            transitions,
+            ThermostatStateEnum[initial_state],
         )
 
     @property

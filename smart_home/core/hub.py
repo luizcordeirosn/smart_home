@@ -38,14 +38,13 @@ class Subject(ABC):
     def remove_observer(self, observer):
         self.observers.remove(observer)
 
-    def notify_event(self, **kwargs):
+    def notify(self, **kwargs):
         for obs in self.observers:
             obs.update(**kwargs)
 
 
 class Hub(Subject):
     def __init__(self):
-        self.__devices = {}
         self.__routine_handlers = {
             "door": self.change_doors_state,
             "bulb": self.change_bulbs_state,
@@ -73,8 +72,12 @@ class Hub(Subject):
         }
 
         logger = Logger()
+        configs = logger.load_config_from_json()
 
-        self.__routines = logger.load_config_from_json().get("routines")
+        self.__routines = configs.get("routines")
+        self.__devices = {}
+
+        self.set_devices_from_dict(configs.get("devices", []))
 
         super().__init__()
 
@@ -98,7 +101,7 @@ class Hub(Subject):
     def enum_map(self):
         return self.__enum_map
 
-    def add_devices(self, device_id, device_type, **kwargs):
+    def add_device(self, device_id, device_type, **kwargs):
         device_list = self.devices.get(device_type, [])
 
         exist_device = self.exist_device(device_type, device_id)
@@ -112,6 +115,8 @@ class Hub(Subject):
         device_list.append(device)
 
         self.devices[device_type] = device_list
+
+        return device
 
     def get_device_by_device_type_and_device_id(self, device_type, device_id):
         devices = list(
@@ -140,6 +145,33 @@ class Hub(Subject):
             raise RoutineNotFoundError(routine_name=routine_name)
 
         return routine
+
+    def get_devices_as_dict(self):
+        devices = [
+            device.as_dict() for value in self.devices.values() for device in value
+        ]
+
+        logger = Logger()
+
+        logger.save_devices_to_json(devices)
+
+    def set_devices_from_dict(self, devices):
+        for device in devices:
+            device_type = device.get("type")
+            device_id = device.get("device_id")
+            device_name = device.get("device_name")
+            device_initial_state = device.get("state")
+            device_attributes = device.get("attributes", {})
+
+            device = self.add_device(
+                device_id,
+                device_type,
+                device_name=device_name,
+                initial_state=device_initial_state,
+            )
+
+            for key_attr, value_attr in device_attributes.items():
+                device.__setattr__(key_attr, value_attr)
 
     def exist_device(self, device_type, device_id):
         device = list(
@@ -199,7 +231,7 @@ class Hub(Subject):
             if device.state == target_state:
                 break
             cycle()
-            self.notify_event(**device.event_data)
+            self.notify(**device.event_data)
 
     def change_bulbs_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
@@ -238,13 +270,13 @@ class Hub(Subject):
                 color = device.current_color
             if brightness != device.brightness and device.state == SwitchEnum.ON:
                 cycle(brightness_value=brightness)
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
             elif color != device.current_color and device.state == SwitchEnum.ON:
                 cycle(color=color)
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
             else:
                 cycle()
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
 
     def change_outlets_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
@@ -260,7 +292,7 @@ class Hub(Subject):
             if device.state == target_state:
                 break
             cycle()
-            self.notify_event(**device.event_data)
+            self.notify(**device.event_data)
 
     def change_sprinklers_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
@@ -280,7 +312,7 @@ class Hub(Subject):
             if device.state == target_state:
                 break
             cycle()
-            self.notify_event(**device.event_data)
+            self.notify(**device.event_data)
 
     def change_thermostats_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
@@ -311,18 +343,18 @@ class Hub(Subject):
                     break
             if target_state == ThermostatStateEnum.IDLE:
                 cycle(target_temperature=target_temperature)
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
             elif target_state == ThermostatStateEnum.COOLING:
                 device.current_temperature += 1
                 cycle(target_temperature=target_temperature)
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
             elif target_state == ThermostatStateEnum.HEATING:
                 device.current_temperature -= 1
                 cycle(target_temperature=target_temperature)
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
             else:
                 cycle()
-                self.notify_event(**device.event_data)
+                self.notify(**device.event_data)
 
     def change_cameras_state(self, action, device, device_type):
         target_state_name = action.get("target_state")
@@ -342,7 +374,7 @@ class Hub(Subject):
             if device.state == target_state:
                 break
             cycle()
-            self.notify_event(**device.event_data)
+            self.notify(**device.event_data)
 
     def publish_event(self, **kwargs):
-        self.notify_event(**kwargs)
+        self.notify(**kwargs)

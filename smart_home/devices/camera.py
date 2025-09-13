@@ -8,10 +8,10 @@ class Camera(Device):
 
     def __init__(
         self,
-        device_id,
-        device_name="Default Camera",
-        initial_state=CameraStateEnum.OFF,
-        memory_mb=2000,
+        device_id: str,
+        device_name: str = "Default Camera",
+        initial_state: str = "OFF",
+        memory_mb: str = 2000,
     ):
         self.__memory_mb = memory_mb
 
@@ -40,7 +40,11 @@ class Camera(Device):
         ]
 
         super().__init__(
-            device_id, device_name, CameraStateEnum, transitions, initial_state
+            device_id,
+            device_name,
+            CameraStateEnum,
+            transitions,
+            CameraStateEnum[initial_state],
         )
 
     @property

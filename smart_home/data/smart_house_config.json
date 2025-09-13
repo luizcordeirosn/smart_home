@@ -1,69 +1,142 @@
 {
-    "hub": { "nome": "Smart House", "versao": "1.0" },
+    "hub": {
+        "nome": "Smart House",
+        "versao": "1.0"
+    },
     "routines": {
-    "leaving_home": [
-      {
-        "type": "door",
-        "device_id": "entrance_door",
-        "target_state": "LOCKED"
-      },
-      {
-        "type": "bulb",
-        "device_id": "living_room_bulb",
-        "target_state": "OFF"
-      },
-      {
-        "type": "outlet",
-        "device_id": "living_room_outlet",
-        "target_state": "OFF"
-      },
-      {
-        "type": "thermostat",
-        "device_id": "living_room_thermostat",
-        "target_state": "IDLE",
-        "attributes": {
-          "target_temperature": 25.0
+        "leaving_home": [
+            {
+                "type": "door",
+                "device_id": "entrance_door",
+                "target_state": "LOCKED"
+            },
+            {
+                "type": "bulb",
+                "device_id": "living_room_bulb",
+                "target_state": "OFF"
+            },
+            {
+                "type": "outlet",
+                "device_id": "living_room_outlet",
+                "target_state": "OFF"
+            },
+            {
+                "type": "thermostat",
+                "device_id": "living_room_thermostat",
+                "target_state": "IDLE",
+                "attributes": {
+                    "target_temperature": 25.0
+                }
+            },
+            {
+                "type": "sprinkler",
+                "device_id": "garden_sprinkler",
+                "target_state": "WATERING"
+            },
+            {
+                "type": "camera",
+                "device_id": "security_cam",
+                "target_state": "RECORDING"
+            }
+        ],
+        "good_night": [
+            {
+                "type": "door",
+                "device_id": "living_room_door",
+                "target_state": "LOCKED"
+            },
+            {
+                "type": "bulb",
+                "device_id": "living_room_bulb",
+                "target_state": "ON",
+                "attributes": {
+                    "brightness": 30,
+                    "color": "COOL"
+                }
+            },
+            {
+                "type": "thermostat",
+                "device_id": "living_room_thermostat",
+                "target_state": "COOLING",
+                "attributes": {
+                    "target_temperature": 18
+                }
+            },
+            {
+                "type": "camera",
+                "device_id": "security_cam",
+                "target_state": "RECORDING"
+            }
+        ]
+    },
+    "devices": [
+        {
+            "type": "door",
+            "device_id": "entrance_door",
+            "device_name": "Default Door",
+            "state": "LOCKED",
+            "attributes": {
+                "invalid_attempts": 0
+            }
+        },
+        {
+            "type": "door",
+            "device_id": "living_room_door",
+            "device_name": "Living Room Door",
+            "state": "OPENED",
+            "attributes": {
+                "invalid_attempts": 0
+            }
+        },
+        {
+            "type": "bulb",
+            "device_id": "living_room_bulb",
+            "device_name": "Living Room Bulb",
+            "state": "OFF",
+            "attributes": {
+                "brightness": 75,
+                "current_color": "NEUTRAL"
+            }
+        },
+        {
+            "type": "outlet",
+            "device_id": "living_room_outlet",
+            "device_name": "Default Outlet",
+            "state": "OFF",
+            "attributes": {
+                "power_w": 750,
+                "usage_wh": 0,
+                "start_usage_time": null
+            }
+        },
+        {
+            "type": "sprinkler",
+            "device_id": "garden_sprinkler",
+            "device_name": "Default Sprinkler",
+            "state": "WATERING",
+            "attributes": {
+                "flow_rate": 20,
+                "usage_lh": 0,
+                "start_usage_time": "2025-09-13 00:21:59"
+            }
+        },
+        {
+            "type": "thermostat",
+            "device_id": "living_room_thermostat",
+            "device_name": "Default Thermostat",
+            "state": "HEATING",
+            "attributes": {
+                "current_temperature": 30.0
+            }
+        },
+        {
+            "type": "camera",
+            "device_id": "security_cam",
+            "device_name": "Default Camera",
+            "state": "RECORDING",
+            "attributes": {
+                "memory_mb": 3000
+            }
         }
-      },
-      {
-        "type": "sprinkler",
-        "device_id": "garden_sprinkler",
-        "target_state": "WATERING"
-      },
-      {
-        "type": "camera",
-        "device_id": "security_cam",
-        "target_state": "RECORDING"
-      }
-    ],
-    "good_night": [
-      {
-        "type": "door",
-        "device_id": "living_room_door",
-        "target_state": "LOCKED"
-      },
-      {
-        "type": "bulb",
-        "device_id": "living_room_bulb",
-        "target_state": "ON",
-        "attributes": {
-          "brightness": 30,
-          "color": "COOL"
-        }
-      },
-      {
-        "type": "thermostat",
-        "device_id": "living_room_thermostat",
-        "target_state": "COOLING",
-        "attributes": {
-          "target_temperature": 18
-        }
-      },
-      {
-        "type": "camera",
-        "device_id": "security_cam",
-        "target_state": "RECORDING"
-      }
     ]
-  }
 }

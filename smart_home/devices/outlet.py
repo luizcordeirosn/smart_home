@@ -10,10 +10,10 @@ class Outlet(Device):
 
     def __init__(
         self,
-        device_id,
-        device_name="Default Outlet",
+        device_id: str,
+        device_name: str = "Default Outlet",
         power_w: int = 600,
-        initial_state=SwitchEnum.OFF,
+        initial_state: str = "OFF",
     ):
         self.power_w = power_w
         self.__usage_wh = 0
@@ -32,7 +32,13 @@ class Outlet(Device):
             },
         ]
 
-        super().__init__(device_id, device_name, SwitchEnum, transitions, initial_state)
+        super().__init__(
+            device_id,
+            device_name,
+            SwitchEnum,
+            transitions,
+            SwitchEnum[initial_state],
+        )
 
     @property
     def power_w(self):
@@ -56,6 +62,8 @@ class Outlet(Device):
 
     @start_usage_time.setter
     def start_usage_time(self, value):
+        if isinstance(value, str):
+            value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         self.__start_usage_time = value
 
     def on_enter_ON(self, event):

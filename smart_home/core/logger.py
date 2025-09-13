@@ -16,6 +16,7 @@ class Singleton:
 class Logger(Singleton):
     FILE_LOG_PATH = "smart_home/data/events_log.csv"
     FILE_REPORT_PATH = "smart_home/data/devices_report.csv"
+    FILE_SMART_HOME_CONFIG = "smart_home/data/smart_house_config.json"
 
     def save_log_to_csv(self, **kwargs):
         timestamp = datetime.now()
@@ -94,6 +95,14 @@ class Logger(Singleton):
 
             writer.writerows(data_dicts)
 
+    def save_devices_to_json(self, devices):
+        configs = self.load_config_from_json()
+
+        with open(self.FILE_SMART_HOME_CONFIG, "w+") as file:
+            configs["devices"] = devices
+
+            json.dump(configs, file, indent=4)
+
     def load_config_from_json(self):
-        with open("smart_home/data/smart_house_config.json", "r+") as file:
+        with open(self.FILE_SMART_HOME_CONFIG, "r+") as file:
             return json.load(file)
