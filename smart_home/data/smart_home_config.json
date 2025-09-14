@@ -73,17 +73,17 @@
         {
             "type": "door",
             "device_id": "entrance_door",
-            "device_name": "Entrance Door",
+            "device_name": "Default Door",
             "state": "LOCKED",
             "attributes": {
-                "invalid_attempts": 2
+                "invalid_attempts": 0
             }
         },
         {
             "type": "door",
             "device_id": "living_room_door",
             "device_name": "Living Room Door",
-            "state": "LOCKED",
+            "state": "OPENED",
             "attributes": {
                 "invalid_attempts": 0
             }
@@ -91,12 +91,12 @@
         {
             "type": "bulb",
             "device_id": "living_room_bulb",
-            "device_name": "Main Bulb",
+            "device_name": "Living Room Bulb",
             "state": "OFF",
             "attributes": {
-                "brightness": 30,
+                "brightness": 75,
                 "current_color": "NEUTRAL",
-                "start_usage_time": "2025-09-14 16:22:50"
+                "start_usage_time": "2025-09-14 16:53:31"
             }
         },
         {
@@ -118,16 +118,16 @@
             "attributes": {
                 "flow_rate": 20,
                 "last_usage_lh": 0,
-                "start_usage_time": "2025-09-14 15:33:09"
+                "start_usage_time": "2025-09-14 16:53:31"
             }
         },
         {
             "type": "thermostat",
             "device_id": "living_room_thermostat",
             "device_name": "Default Thermostat",
-            "state": "COOLING",
+            "state": "HEATING",
             "attributes": {
-                "current_temperature": 18
+                "current_temperature": 30.0
             }
         },
         {

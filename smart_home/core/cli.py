@@ -255,9 +255,15 @@ class Cli:
                     input_attr = input(
                         f"{str_attribute_to_print} ({', '.join(device_enum_values)}): "
                     )
+
                     input_attr = input_attr.upper()
                 else:
                     input_attr = input(f"{str_attribute_to_print}: ")
+
+                if input_attr == "":
+                    raise ValueError(
+                        f"Input for '{str_attribute_to_print}' cannot be empty"
+                    )
 
                 if not isinstance(input_attr, self.type_map.get(param_type)):
                     raise ValueError("Invalid input. Couldn't create the device")
