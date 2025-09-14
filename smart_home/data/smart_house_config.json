@@ -1,7 +1,7 @@
 {
     "hub": {
-        "nome": "Smart Home",
-        "versao": "1.0"
+        "name": "Smart Home Hub",
+        "version": "1.0"
     },
     "routines": {
         "leaving_home": [
@@ -95,7 +95,8 @@
             "state": "OFF",
             "attributes": {
                 "brightness": 75,
-                "current_color": "NEUTRAL"
+                "current_color": "NEUTRAL",
+                "start_usage_time": null
             }
         },
         {
@@ -113,10 +114,10 @@
             "type": "sprinkler",
             "device_id": "garden_sprinkler",
             "device_name": "Default Sprinkler",
-            "state": "WATERING",
+            "state": "IDLE",
             "attributes": {
                 "flow_rate": 20,
-                "last_usage_lh": 0,
+                "last_usage_lh": 29.138963944444445,
                 "start_usage_time": "2025-09-14 12:58:33"
             }
         },
@@ -124,9 +125,9 @@
             "type": "thermostat",
             "device_id": "living_room_thermostat",
             "device_name": "Default Thermostat",
-            "state": "OFF",
+            "state": "COOLING",
             "attributes": {
-                "current_temperature": 0.0
+                "current_temperature": 24.5
             }
         },
         {

@@ -53,6 +53,8 @@ class Hub(Subject):
 
         self.__devices = {}
         self.__routines = {}
+        self.__program_name = "Smart Hub"
+        self.__program_version = "0.1"
 
         self.initial_configs()
 
@@ -66,6 +68,26 @@ class Hub(Subject):
     def routines(self):
         return self.__routines
 
+    @routines.setter
+    def routines(self, value):
+        self.__routines = value
+
+    @property
+    def program_name(self):
+        return self.__program_name
+
+    @program_name.setter
+    def program_name(self, value):
+        self.__program_name = value
+
+    @property
+    def program_version(self):
+        return self.__program_version
+
+    @program_version.setter
+    def program_version(self, value):
+        self.__program_version = value
+
     @property
     def routine_handlers(self):
         return self.__routine_handlers
@@ -78,10 +100,6 @@ class Hub(Subject):
     def enum_map(self):
         return self.__enum_map
 
-    @routines.setter
-    def routines(self, value):
-        self.__routines = value
-
     def initial_configs(self):
         persistence = Persistence()
 
@@ -89,6 +107,11 @@ class Hub(Subject):
 
         self.routines = configs.get("routines", {})
         self.parse_from_dict_list_to_devices(configs.get("devices", []))
+
+        hub = configs.get("hub")
+
+        self.program_name = hub.get("name")
+        self.program_version = hub.get("version")
 
     def add_device(self, device_type, device_id, **kwargs):
         device_list = self.devices.get(device_type, [])

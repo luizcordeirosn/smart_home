@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from smart_home.utils.csv_writer import CsvWriter
+from smart_home.utils.csv_manager import CsvManager
 from smart_home.utils.patterns import Singleton
 
 
@@ -40,4 +40,24 @@ class Logger(Singleton):
             }
         ]
 
-        CsvWriter.save_to_csv(self.FILE_LOG_PATH, fieldnames, data_dicts)
+        CsvManager.save_to_csv(self.FILE_LOG_PATH, fieldnames, data_dicts)
+
+    def most_used_devices(self):
+        reports = CsvManager.load_report_from_csv(self.FILE_LOG_PATH)
+
+        devices = [row.get("Device Instance") for row in reports]
+
+        if not devices:
+            return None
+
+        devices_set = set(devices)
+
+        devices_usage_count = {
+            device_set: devices.count(device_set) for device_set in devices_set
+        }
+
+        return list(
+            sorted(
+                devices_usage_count.items(), key=lambda x: (x[1], x[0]), reverse=True
+            )
+        )[0]

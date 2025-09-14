@@ -1,6 +1,7 @@
 import inspect
 
 from smart_home.core.hub import Hub
+from smart_home.core.logger import Logger
 from smart_home.core.observers import EventHandler
 from smart_home.core.reporter import Reporter
 
@@ -21,12 +22,15 @@ class Cli:
             "7": self.save_configuration_option,
             "8": self.add_device_option,
             "9": self.remove_device_option,
+            "10": self.exit_option,
         }
 
         self.__report_menu_options = {
             "1": self.outlet_power_consumption_option,
-            "2": self.bulb_on_time_report,
-            "3": self.most_used_devices_report,
+            "2": self.sprinkler_water_consumption_option,
+            "3": self.bulb_on_time_report,
+            "4": self.most_used_thermostat_temperature_report,
+            "5": self.most_used_devices_report,
         }
 
         self.__type_map = {
@@ -34,7 +38,12 @@ class Cli:
             "int": int,
         }
 
+        self.__logger = Logger()
         self.__reporter = Reporter()
+
+    @property
+    def logger(self):
+        return self.__logger
 
     @property
     def reporter(self):
@@ -60,8 +69,11 @@ class Cli:
         is_running = True
         while is_running:
             try:
-                print("""=== SMART HOME HUB ===
-1. List Devices
+                print(
+                    f"=== {self.smart_home.program_name.upper()}",
+                    f"{self.smart_home.program_version} ===",
+                )
+                print("""1. List Devices
 2. Show Device Details
 3. Execute Command on Device
 4. Change Device Attribute
@@ -79,6 +91,8 @@ class Cli:
                     print("\nInvalid option, please try again\n")
                 else:
                     option()
+                    if option_input == "10":
+                        is_running = False
 
             except Exception as e:
                 print(f"\n{e.__class__.__name__} - {e}\n")
@@ -189,8 +203,10 @@ class Cli:
     def report_menu_option(self):
         print("""\n=== Report Menu ===
 1. Outlet Power Consumption
-2. Bulb On-Time Report
-3. Most Used Devices""")
+2. Sprinkler Water Consumption
+3. Bulb On-Time Report
+4. Most Used Thermostat Temperature
+5. Most Used Devices""")
 
         option_input = input("\nChoose an option: ")
         option = self.report_menu_options.get(option_input)
@@ -283,18 +299,47 @@ class Cli:
             f"\nTotal energy consumed by all outlets: {total_consumption_wh:.4f} Wh\n"
         )
 
+    def sprinkler_water_consumption_option(self):
+        total_consumption_lh = self.reporter.sprinkler_water_consumption_report()
+
+        print(
+            f"\nTotal water consumed by all sprinklers: {total_consumption_lh:.4f} Lh\n"
+        )
+
     def bulb_on_time_report(self):
         time_usage = self.reporter.bulb_on_time_report()
 
         print(f"\nTime usage by all bulbs: {time_usage}\n")
 
-    def most_used_devices_report(self):
-        device_name, usage_count = self.reporter.most_used_devices()
+    def most_used_thermostat_temperature_report(self):
+        report_data = self.reporter.most_used_thermostat_temperature_report()
 
-        print(
-            f"\nThe most frequently used device is {device_name.capitalize()}",
-            f"and it was used {usage_count} times\n",
-        )
+        if report_data:
+            thermostat_temperature, temperature_count = report_data
+
+            print(
+                f"\nThe most frequently used temperature is {thermostat_temperature}",
+                f"and it was used {temperature_count} times\n",
+            )
+        else:
+            print("\nNo device usage data available to generate a report\n")
+
+    def most_used_devices_report(self):
+        report_data = self.logger.most_used_devices()
+
+        if report_data:
+            device_name, usage_count = report_data
+
+            print(
+                f"\nThe most frequently used device is {device_name}",
+                f"and it was used {usage_count} times\n",
+            )
+        else:
+            print("\nNo Thermostat usage data available to generate a report\n")
+
+    def exit_option(self):
+        self.save_configuration_option()
+        print("Exiting Smart Home Hub. Goodbye!")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
-import csv
 from datetime import datetime, timedelta
 
-from smart_home.utils.csv_writer import CsvWriter
+from smart_home.utils.csv_manager import CsvManager
 from smart_home.utils.patterns import Singleton
 
 
@@ -37,10 +36,10 @@ class Reporter(Singleton):
             }
         ]
 
-        CsvWriter.save_to_csv(self.FILE_REPORT_PATH, fieldnames, data_dicts)
+        CsvManager.save_to_csv(self.FILE_REPORT_PATH, fieldnames, data_dicts)
 
     def outlet_power_consumption_report(self):
-        reports = self.load_report_from_csv()
+        reports = CsvManager.load_report_from_csv(self.FILE_REPORT_PATH)
         outlet_reports = list(
             filter(
                 lambda row: row.get("Device Instance") == "Outlet",
@@ -61,8 +60,30 @@ class Reporter(Singleton):
 
         return total_consumption
 
+    def sprinkler_water_consumption_report(self):
+        reports = CsvManager.load_report_from_csv(self.FILE_REPORT_PATH)
+        sprinkler_reports = list(
+            filter(
+                lambda row: row.get("Device Instance") == "Sprinkler",
+                reports,
+            )
+        )
+
+        sprinkler_messages = [
+            sprinkler_report.get("Message") for sprinkler_report in sprinkler_reports
+        ]
+
+        total_consumption = 0.0
+        for message in sprinkler_messages:
+            session_part = message.split("Consumption: ")[1]
+            value_str = session_part.split(" ")[0]
+
+            total_consumption += float(value_str)
+
+        return total_consumption
+
     def bulb_on_time_report(self):
-        reports = self.load_report_from_csv()
+        reports = CsvManager.load_report_from_csv(self.FILE_REPORT_PATH)
         bulb_reports = list(
             filter(
                 lambda row: row.get("Device Instance") == "Bulb",
@@ -85,21 +106,42 @@ class Reporter(Singleton):
 
         return total_usage_time
 
-    def most_used_devices(self):
-        reports = self.load_report_from_csv()
+    def most_used_thermostat_temperature_report(self):
+        reports = CsvManager.load_report_from_csv(self.FILE_REPORT_PATH)
 
-        devices = [row.get("Device Instance") for row in reports]
+        thermostat_reports = list(
+            filter(
+                lambda row: row.get("Device Instance") == "Thermostat",
+                reports,
+            )
+        )
 
-        devices_set = set(devices)
+        if not thermostat_reports:
+            return None
 
-        devices_usage = {
-            device_set: devices.count(device_set) for device_set in devices_set
+        thermostat_messages = [
+            thermostat_report.get("Message") for thermostat_report in thermostat_reports
+        ]
+
+        thermostat_temperatures = [
+            thermostat_message.split(" ")[-1]
+            for thermostat_message in thermostat_messages
+            if thermostat_message.split(" ")[-1] != "off"
+        ]
+
+        thermostat_temperatures_set = set(thermostat_temperatures)
+
+        thermostat_temperatures_counts = {
+            float(thermostat_temperature_set): thermostat_temperatures.count(
+                thermostat_temperature_set
+            )
+            for thermostat_temperature_set in thermostat_temperatures_set
         }
 
         return list(
-            sorted(devices_usage.items(), key=lambda x: (x[1], x[0]), reverse=True)
+            sorted(
+                thermostat_temperatures_counts.items(),
+                key=lambda x: (x[1], x[0]),
+                reverse=True,
+            )
         )[0]
-
-    def load_report_from_csv(self):
-        with open(self.FILE_REPORT_PATH, "r+") as file:
-            return list(csv.DictReader(file))

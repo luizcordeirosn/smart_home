@@ -43,3 +43,10 @@ class PositiveValue(ValidatorDescriptor):
         if value < 0:
             raise ValueError("Value must be positive or 0")
         setattr(obj, self.private_name, value)
+
+
+class ValidTemperature(ValidatorDescriptor):
+    def __set__(self, obj, value):
+        if not isinstance(value, int) and not isinstance(value, float):
+            raise ValueError("Value must be an int/float type")
+        setattr(obj, self.private_name, value)

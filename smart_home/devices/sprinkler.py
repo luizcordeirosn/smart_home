@@ -15,7 +15,7 @@ class Sprinkler(Device):
         initial_state: str = "IDLE",
         flow_rate: int = 15,
     ):
-        self.flow_rate = flow_rate
+        self.__flow_rate = flow_rate
         self.__last_usage_lh = 0
         self.__start_usage_time = None
 

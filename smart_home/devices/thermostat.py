@@ -1,8 +1,11 @@
+from smart_home.core.descriptors import ValidTemperature
 from smart_home.core.enums import EventType, ThermostatStateEnum
 from smart_home.devices.device import Device
 
 
 class Thermostat(Device):
+    __current_temperature = ValidTemperature()
+
     def __init__(
         self,
         device_id,
