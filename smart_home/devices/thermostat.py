@@ -126,4 +126,8 @@ class Thermostat(Device):
         self.event_data["type"] = EventType.THERMOSTAT_ON_ENTER_OFF
 
     def __repr__(self):
-        return f"{self.device_name} | {self.state} | {self.current_temperature}"
+        return (
+            f"{self.device_name} | "
+            f"{self.state} | "
+            f"Current Temperature: {self.current_temperature}"
+        )

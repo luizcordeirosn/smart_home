@@ -16,7 +16,7 @@ class Sprinkler(Device):
         flow_rate: int = 15,
     ):
         self.flow_rate = flow_rate
-        self.__usage_lh = 0
+        self.__last_usage_lh = 0
         self.__start_usage_time = None
 
         transitions = [
@@ -59,12 +59,12 @@ class Sprinkler(Device):
         self.__flow_rate = value
 
     @property
-    def usage_lh(self):
-        return self.__usage_lh
+    def last_usage_lh(self):
+        return self.__last_usage_lh
 
-    @usage_lh.setter
-    def usage_lh(self, value):
-        self.__usage_lh = value
+    @last_usage_lh.setter
+    def last_usage_lh(self, value):
+        self.__last_usage_lh = value
 
     @property
     def start_usage_time(self):
@@ -84,12 +84,17 @@ class Sprinkler(Device):
 
         session_consumption = (usage_time.total_seconds() / 3600) * self.flow_rate
 
-        self.usage_lh += session_consumption
+        self.last_usage_lh = session_consumption
 
         self.event_data["type"] = EventType.SPRINKLER_ON_EXIT_WATERING
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
-        self.event_data["usage_lh"] = self.usage_lh
+        self.event_data["usage_lh"] = self.last_usage_lh
 
     def __repr__(self):
-        return f"{self.device_name} | {self.state} | {self.flow_rate} | {self.usage_lh}"
+        return (
+            f"{self.device_name} | "
+            f"{self.state} | "
+            f"Flow Rate: {self.flow_rate} | "
+            f"Last Usage Lh{self.last_usage_lh}"
+        )

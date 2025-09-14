@@ -71,4 +71,4 @@ class Camera(Device):
         self.event_data["memory_mb"] = self.memory_mb
 
     def __repr__(self):
-        return f"{self.device_name} | {self.memory_mb}"
+        return f"{self.device_name} | {self.state} | Memory: {self.memory_mb}"

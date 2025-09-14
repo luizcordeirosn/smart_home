@@ -1,21 +1,16 @@
-from abc import ABC, abstractmethod
-
 from smart_home.core.enums import EventType
 from smart_home.core.logger import Logger
-
-
-class Observer(ABC):
-    @abstractmethod
-    def update(self, **kwargs):
-        pass
+from smart_home.core.reporter import Reporter
+from smart_home.utils.patterns import Observer
 
 
 class EventHandler(Observer):
     def __init__(self):
-        self.event_handlers = {
+        self.__event_handlers = {
             EventType.DOOR_ON_INVALID_ATTEMPT: self.door_invalid_attempt,
             EventType.BULB_UPDATE_BRIGHTNESS: self.bulb_update_brightness,
             EventType.BULB_UPDATE_COLOR: self.bulb_update_color,
+            EventType.BULB_ON_ENTER_OFF: self.bulb_on_enter_off,
             EventType.OUTLET_ON_ENTER_OFF: self.outlet_on_enter_off,
             EventType.SPRINKLER_ON_EXIT_WATERING: self.sprinkler_on_exit_watering,
             EventType.THERMOSTAT_ON_ENTER_IDLE: self.thermostat_on_enter_idle,
@@ -27,15 +22,30 @@ class EventHandler(Observer):
             EventType.CAMERA_ON_EXIT_RECORDING: self.camera_on_exit_recording,
         }
 
+        self.__logger = Logger()
+        self.__reporter = Reporter()
+
+    @property
+    def event_handlers(self):
+        return self.__event_handlers
+
+    @property
+    def logger(self):
+        return self.__logger
+
+    @property
+    def reporter(self):
+        return self.__reporter
+
     def update(self, **kwargs):
-        logger = Logger()
-        logger.save_log_to_csv(**kwargs)
+        self.logger.save_log_to_csv(**kwargs)
 
         handler = self.event_handlers.get((kwargs.get("type")))
 
         if handler:
             handler_message = handler(**kwargs)
-            logger.save_report_to_csv(**kwargs, handler_message=handler_message)
+
+            self.reporter.save_report_to_csv(**kwargs, handler_message=handler_message)
 
     def door_invalid_attempt(self, **kwargs):
         invalid_attempts = kwargs.get("invalid_attempts")
@@ -56,6 +66,11 @@ class EventHandler(Observer):
         current_color = kwargs.get("current_color")
 
         return f"INFO - Color changed to {current_color}"
+
+    def bulb_on_enter_off(self, **kwargs):
+        usage_time = kwargs.get("usage_time")
+
+        return f"INFO - Bulb turned off. Duration: {usage_time}"
 
     def outlet_on_enter_off(self, **kwargs):
         usage_time = kwargs.get("usage_time")

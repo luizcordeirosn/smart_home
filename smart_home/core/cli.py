@@ -1,9 +1,8 @@
 import inspect
-import sys
 
 from smart_home.core.hub import Hub
 from smart_home.core.observers import EventHandler
-from smart_home.devices.bulb import Bulb
+from smart_home.core.reporter import Reporter
 
 
 class Cli:
@@ -18,14 +17,28 @@ class Cli:
             "3": self.execute_command_on_device_option,
             "4": self.change_device_attribute_option,
             "5": self.run_routine_option,
+            "6": self.report_menu_option,
             "7": self.save_configuration_option,
             "8": self.add_device_option,
+            "9": self.remove_device_option,
+        }
+
+        self.__report_menu_options = {
+            "1": self.outlet_power_consumption_option,
+            "2": self.bulb_on_time_report,
+            "3": self.most_used_devices_report,
         }
 
         self.__type_map = {
             "str": str,
             "int": int,
         }
+
+        self.__reporter = Reporter()
+
+    @property
+    def reporter(self):
+        return self.__reporter
 
     @property
     def smart_home(self):
@@ -34,6 +47,10 @@ class Cli:
     @property
     def menu_options(self):
         return self.__menu_options
+
+    @property
+    def report_menu_options(self):
+        return self.__report_menu_options
 
     @property
     def type_map(self):
@@ -169,6 +186,20 @@ class Cli:
 
         print(f"\nRoutine '{routine_name}' executed successfully\n")
 
+    def report_menu_option(self):
+        print("""\n=== Report Menu ===
+1. Outlet Power Consumption
+2. Bulb On-Time Report
+3. Most Used Devices""")
+
+        option_input = input("\nChoose an option: ")
+        option = self.report_menu_options.get(option_input)
+
+        if option is None:
+            print("\nInvalid option\n")
+        else:
+            option()
+
     def save_configuration_option(self):
         self.smart_home.parse_from_devices_to_dict_list()
         print("\nConfiguration has been saved successfully\n")
@@ -179,22 +210,26 @@ class Cli:
         device_class = self.smart_home.class_map.get(device_type)
 
         if device_class is not None:
-            init_attributes = str(inspect.signature(device_class.__init__)).split(", ")
+            init_attributes = (
+                str(inspect.signature(device_class.__init__))
+                .replace(" ", "")
+                .split(",")
+            )
 
             class_attributes = []
             for element in init_attributes[1:]:
-                equals_index = element.find(" =")
+                equals_index = element.find("=")
                 if equals_index != -1:
-                    class_attributes.append(element[:equals_index].split(": "))
+                    class_attributes.append(element[:equals_index].split(":"))
                 else:
-                    class_attributes.append(element.split(": "))
+                    class_attributes.append(element.split(":"))
 
             args = [device_type]
             kwargs = {}
             for attr in class_attributes:
                 param_key = attr[0]
                 param_type = attr[1]
-                str_attribute = param_key.replace("_", " ").title()
+                str_attribute_to_print = param_key.replace("_", " ").title()
 
                 if param_key == "initial_state":
                     device_enum_values = list(
@@ -202,24 +237,64 @@ class Cli:
                     )
 
                     input_attr = input(
-                        f"{str_attribute} ({', '.join(device_enum_values)}): "
+                        f"{str_attribute_to_print} ({', '.join(device_enum_values)}): "
                     )
                     input_attr = input_attr.upper()
                 else:
-                    input_attr = input(f"{str_attribute}: ")
+                    input_attr = input(f"{str_attribute_to_print}: ")
 
                 if not isinstance(input_attr, self.type_map.get(param_type)):
                     raise ValueError("Invalid input. Couldn't create the device")
 
                 if param_key == "device_id":
                     args.append(input_attr)
-
                 else:
                     kwargs[attr[0]] = input_attr
 
-            self.smart_home.add_device(*args, **kwargs)
+            device = self.smart_home.add_device(*args, **kwargs)
 
-            print(f"\nNew {device_type} created successfully\n")
+            print(
+                "\n[EVENT] Device Added: ",
+                f"{{id: {device.device_id}, type: {device_type}}}",
+            )
+
+            print("New device created successfully\n")
+
+    def remove_device_option(self):
+        print(f"\nDevices Type Supported ({', '.join(self.smart_home.devices.keys())})")
+        device_type = input("Device Type: ")
+        device_id = input("Device ID: ")
+
+        deleted_device = self.smart_home.delete_device_by_device_type_and_device_id(
+            device_type, device_id
+        )
+
+        print(
+            "\n[EVENT] Device Removed: ",
+            f"{{id: {deleted_device.device_id}, type: {device_type}}}",
+        )
+
+        print("New device deleted successfully\n")
+
+    def outlet_power_consumption_option(self):
+        total_consumption_wh = self.reporter.outlet_power_consumption_report()
+
+        print(
+            f"\nTotal energy consumed by all outlets: {total_consumption_wh:.4f} Wh\n"
+        )
+
+    def bulb_on_time_report(self):
+        time_usage = self.reporter.bulb_on_time_report()
+
+        print(f"\nTime usage by all bulbs: {time_usage}\n")
+
+    def most_used_devices_report(self):
+        device_name, usage_count = self.reporter.most_used_devices()
+
+        print(
+            f"\nThe most frequently used device is {device_name.capitalize()}",
+            f"and it was used {usage_count} times\n",
+        )
 
 
 if __name__ == "__main__":

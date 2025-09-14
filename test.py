@@ -179,3 +179,5 @@ if __name__ == "__main__":
     device = smart_home.get_device_by_device_type_and_device_id(
         "bulb", "living_room_bulb"
     )
+
+    smart_home.parse_from_devices_to_dict_list()

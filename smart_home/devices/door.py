@@ -60,4 +60,8 @@ class Door(Device):
         self.set_current_event(event)
 
     def __repr__(self):
-        return f"{self.device_name} | {self.state} | {self.invalid_attempts} invalid attempts"
+        return (
+            f"{self.device_name} | "
+            f"{self.state} | "
+            f"{self.invalid_attempts} invalid attempts"
+        )

@@ -1,5 +1,3 @@
-from abc import ABC
-
 from smart_home.core.enums import (
     CameraStateEnum,
     ColorEnum,
@@ -15,32 +13,14 @@ from smart_home.core.error import (
     DeviceNotFoundError,
     RoutineNotFoundError,
 )
-from smart_home.core.logger import Logger
+from smart_home.core.persistence import Persistence
 from smart_home.devices.bulb import Bulb
 from smart_home.devices.camera import Camera
 from smart_home.devices.door import Door
 from smart_home.devices.outlet import Outlet
 from smart_home.devices.sprinkler import Sprinkler
 from smart_home.devices.thermostat import Thermostat
-
-
-class Subject(ABC):
-    def __init__(self):
-        self.__observers = []
-
-    @property
-    def observers(self):
-        return self.__observers
-
-    def add_observer(self, observer):
-        self.observers.append(observer)
-
-    def remove_observer(self, observer):
-        self.observers.remove(observer)
-
-    def notify(self, **kwargs):
-        for obs in self.observers:
-            obs.update(**kwargs)
+from smart_home.utils.patterns import Subject
 
 
 class Hub(Subject):
@@ -71,13 +51,10 @@ class Hub(Subject):
             "camera": CameraStateEnum,
         }
 
-        logger = Logger()
-        configs = logger.load_config_from_json()
-
-        self.__routines = configs.get("routines")
         self.__devices = {}
+        self.__routines = {}
 
-        self.parse_from_dict_list_to_devices(configs.get("devices", []))
+        self.initial_configs()
 
         super().__init__()
 
@@ -100,6 +77,18 @@ class Hub(Subject):
     @property
     def enum_map(self):
         return self.__enum_map
+
+    @routines.setter
+    def routines(self, value):
+        self.__routines = value
+
+    def initial_configs(self):
+        persistence = Persistence()
+
+        configs = persistence.load_config_from_json()
+
+        self.routines = configs.get("routines", {})
+        self.parse_from_dict_list_to_devices(configs.get("devices", []))
 
     def add_device(self, device_type, device_id, **kwargs):
         device_list = self.devices.get(device_type, [])
@@ -153,18 +142,20 @@ class Hub(Subject):
     def delete_device_by_device_type_and_device_id(self, device_type, device_id):
         device = self.get_device_by_device_type_and_device_id(device_type, device_id)
 
-        devices_type = self.devices.get("device_type")
+        devices_type = self.devices.get(device_type)
 
         devices_type.remove(device)
 
+        return device
+
     def parse_from_devices_to_dict_list(self):
+        persistence = Persistence()
+
         devices = [
             device.as_dict() for value in self.devices.values() for device in value
         ]
 
-        logger = Logger()
-
-        logger.save_devices_to_json(devices)
+        persistence.save_devices_to_json(devices)
 
     def parse_from_dict_list_to_devices(self, devices):
         for device in devices:
@@ -233,9 +224,9 @@ class Hub(Subject):
                     handler(action, device, device_type)
 
     def change_doors_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         door_cycle = [device.close, device.lock, device.unlock, device.open]
 
@@ -246,9 +237,9 @@ class Hub(Subject):
             self.notify(**device.event_data)
 
     def change_bulbs_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         attributes = action.get("attributes")
 
@@ -291,9 +282,9 @@ class Hub(Subject):
                 self.notify(**device.event_data)
 
     def change_outlets_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         outlet_cycle = [
             device.turn_off,
@@ -307,9 +298,9 @@ class Hub(Subject):
             self.notify(**device.event_data)
 
     def change_sprinklers_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         device
 
@@ -327,9 +318,9 @@ class Hub(Subject):
             self.notify(**device.event_data)
 
     def change_thermostats_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         attributes = action.get("attributes")
 
@@ -367,9 +358,9 @@ class Hub(Subject):
                 self.notify(**device.event_data)
 
     def change_cameras_state(self, action, device, device_type):
-        target_state_name = action.get("target_state")
-        target_state_enum = self.enum_map.get(device_type)
-        target_state = target_state_enum[target_state_name]
+        target_state = self.get_target_state_enum(
+            action.get("target_state"), device_type
+        )
 
         cameras_cycle = [
             device.turn_on,
@@ -383,6 +374,10 @@ class Hub(Subject):
                 break
             cycle()
             self.notify(**device.event_data)
+
+    def get_target_state_enum(self, target_state_name, device_type):
+        target_state_enum = self.enum_map.get(device_type)
+        return target_state_enum[target_state_name]
 
     def publish_event(self, **kwargs):
         self.notify(**kwargs)

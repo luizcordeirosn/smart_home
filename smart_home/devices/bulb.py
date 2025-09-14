@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from smart_home.core.descriptors import BrightnessRange, ValidColor
 from smart_home.core.enums import ColorEnum, EventType, SwitchEnum
 from smart_home.devices.device import Device
@@ -15,6 +17,7 @@ class Bulb(Device):
     ):
         self.__brightness: int = 75
         self.__current_color: ColorEnum = ColorEnum.NEUTRAL
+        self.__start_usage_time = None
 
         transitions = [
             {
@@ -67,6 +70,25 @@ class Bulb(Device):
             value = ColorEnum[value]
         self.__current_color = value
 
+    @property
+    def start_usage_time(self):
+        return self.__start_usage_time
+
+    @start_usage_time.setter
+    def start_usage_time(self, value):
+        if isinstance(value, str):
+            value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        self.__start_usage_time = value
+
+    def on_enter_ON(self, event):
+        self.start_usage_time = datetime.now()
+
+    def on_enter_OFF(self, event):
+        usage_time = datetime.now() - self.start_usage_time
+
+        self.event_data["type"] = EventType.BULB_ON_ENTER_OFF
+        self.event_data["usage_time"] = usage_time
+
     def update_brightness(self, event):
         self.brightness = event.kwargs.get("brightness_value")
 
@@ -80,4 +102,9 @@ class Bulb(Device):
         self.event_data["current_color"] = self.current_color
 
     def __repr__(self):
-        return f"{self.device_id} | {self.device_name} | {self.brightness} | {self.current_color.name}"
+        return (
+            f"{self.device_name} | "
+            f"{self.state} | "
+            f"Brightness: {self.brightness} | "
+            f"Current Color: {self.current_color.name}"
+        )

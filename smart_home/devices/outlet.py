@@ -16,7 +16,7 @@ class Outlet(Device):
         initial_state: str = "OFF",
     ):
         self.__power_w = power_w
-        self.__usage_wh = 0
+        self.__last_usage_wh = 0
         self.__start_usage_time = None
 
         transitions = [
@@ -49,12 +49,12 @@ class Outlet(Device):
         self.__power_w = value
 
     @property
-    def usage_wh(self):
-        return self.__usage_wh
+    def last_usage_wh(self):
+        return self.__last_usage_wh
 
-    @usage_wh.setter
-    def usage_wh(self, value):
-        self.__usage_wh = value
+    @last_usage_wh.setter
+    def last_usage_wh(self, value):
+        self.__last_usage_wh = value
 
     @property
     def start_usage_time(self):
@@ -74,12 +74,17 @@ class Outlet(Device):
 
         session_consumption = (usage_time.total_seconds() / 3600) * self.power_w
 
-        self.usage_wh += session_consumption
+        self.last_usage_wh = session_consumption
 
         self.event_data["type"] = EventType.OUTLET_ON_ENTER_OFF
         self.event_data["usage_time"] = usage_time
         self.event_data["session_consumption"] = session_consumption
-        self.event_data["usage_wh"] = self.usage_wh
+        self.event_data["usage_wh"] = self.last_usage_wh
 
     def __repr__(self):
-        return f"{self.device_name} | {self.state} | {self.power_w} | {self.usage_wh}"
+        return (
+            f"{self.device_name} | "
+            f"{self.state} | "
+            f"Power: {self.power_w} | "
+            f"Last Usage Wh: {self.last_usage_wh}"
+        )

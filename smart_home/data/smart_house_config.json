@@ -1,6 +1,6 @@
 {
     "hub": {
-        "nome": "Smart House",
+        "nome": "Smart Home",
         "versao": "1.0"
     },
     "routines": {
@@ -76,7 +76,7 @@
             "device_name": "Default Door",
             "state": "LOCKED",
             "attributes": {
-                "invalid_attempts": 3
+                "invalid_attempts": 0
             }
         },
         {
@@ -89,22 +89,13 @@
             }
         },
         {
-            "type": "door",
-            "device_id": "entrance_door_2",
-            "device_name": "entrance door",
-            "state": "UNLOCKED",
-            "attributes": {
-                "invalid_attempts": 0
-            }
-        },
-        {
             "type": "bulb",
             "device_id": "living_room_bulb",
             "device_name": "Living Room Bulb",
             "state": "OFF",
             "attributes": {
                 "brightness": 75,
-                "current_color": "COOL"
+                "current_color": "NEUTRAL"
             }
         },
         {
@@ -114,8 +105,8 @@
             "state": "OFF",
             "attributes": {
                 "power_w": 750,
-                "usage_wh": 131.58467041666665,
-                "start_usage_time": "2025-09-14 00:19:15"
+                "last_usage_wh": 2.575858333333333,
+                "start_usage_time": "2025-09-14 13:01:50"
             }
         },
         {
@@ -125,17 +116,17 @@
             "state": "WATERING",
             "attributes": {
                 "flow_rate": 20,
-                "usage_lh": 478.10877837222233,
-                "start_usage_time": "2025-09-14 00:26:49"
+                "last_usage_lh": 0,
+                "start_usage_time": "2025-09-14 12:58:33"
             }
         },
         {
             "type": "thermostat",
             "device_id": "living_room_thermostat",
             "device_name": "Default Thermostat",
-            "state": "IDLE",
+            "state": "OFF",
             "attributes": {
-                "current_temperature": 25.0
+                "current_temperature": 0.0
             }
         },
         {
@@ -144,7 +135,7 @@
             "device_name": "Default Camera",
             "state": "RECORDING",
             "attributes": {
-                "memory_mb": 2900
+                "memory_mb": 3000
             }
         }
     ]
