@@ -37,7 +37,7 @@ class Outlet(Device):
             device_name,
             SwitchEnum,
             transitions,
-            SwitchEnum[initial_state],
+            initial_state,
         )
 
     @property

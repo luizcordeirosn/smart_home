@@ -31,14 +31,12 @@ class Bulb(Device):
                 "trigger": "set_brightness",
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
-                "conditions": "is_brightness_in_range",
                 "after": "update_brightness",
             },
             {
                 "trigger": "set_color",
                 "source": SwitchEnum.ON,
                 "dest": SwitchEnum.ON,
-                "conditions": "is_valid_color",
                 "after": "update_color",
             },
         ]
@@ -48,7 +46,7 @@ class Bulb(Device):
             device_name,
             SwitchEnum,
             transitions,
-            SwitchEnum[initial_state],
+            initial_state,
         )
 
     @property
@@ -69,22 +67,6 @@ class Bulb(Device):
             value = ColorEnum[value]
         self.__current_color = value
 
-    def is_brightness_in_range(self, event):
-        brightness_value = event.kwargs.get("brightness_value")
-
-        if brightness_value is None:
-            raise ValueError("brightness_value argument is missing")
-
-        return 0 <= brightness_value <= 100
-
-    def is_valid_color(self, event):
-        color = event.kwargs.get("color")
-
-        if color is None:
-            raise ValueError("color argument is missing")
-
-        return isinstance(color, ColorEnum)
-
     def update_brightness(self, event):
         self.brightness = event.kwargs.get("brightness_value")
 
@@ -92,7 +74,7 @@ class Bulb(Device):
         self.event_data["brightness"] = self.brightness
 
     def update_color(self, event):
-        self.current_color = event.kwargs.get("color")
+        self.current_color = event.kwargs.get("color").upper()
 
         self.event_data["type"] = EventType.BULB_UPDATE_COLOR
         self.event_data["current_color"] = self.current_color

@@ -176,4 +176,6 @@ if __name__ == "__main__":
 
     print("__")
 
-    device = smart_home.get_device_by_device_type_and_device_id("door", "entrance_door")
+    device = smart_home.get_device_by_device_type_and_device_id(
+        "bulb", "living_room_bulb"
+    )

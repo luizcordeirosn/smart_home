@@ -47,7 +47,7 @@ class Sprinkler(Device):
             device_name,
             SprinklerStateEnum,
             transitions,
-            SprinklerStateEnum[initial_state],
+            initial_state,
         )
 
     @property

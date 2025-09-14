@@ -11,7 +11,7 @@ class Camera(Device):
         device_id: str,
         device_name: str = "Default Camera",
         initial_state: str = "OFF",
-        memory_mb: str = 2000,
+        memory_mb: int = 2000,
     ):
         self.__memory_mb = memory_mb
 
@@ -44,7 +44,7 @@ class Camera(Device):
             device_name,
             CameraStateEnum,
             transitions,
-            CameraStateEnum[initial_state],
+            initial_state,
         )
 
     @property

@@ -28,13 +28,21 @@ class Thermostat(Device):
             },
             {
                 "trigger": "check_temperature",
-                "source": [ThermostatStateEnum.IDLE, ThermostatStateEnum.COOLING],
+                "source": [
+                    ThermostatStateEnum.IDLE,
+                    ThermostatStateEnum.HEATING,
+                    ThermostatStateEnum.COOLING,
+                ],
                 "dest": ThermostatStateEnum.HEATING,
                 "conditions": "is_too_cold",
             },
             {
                 "trigger": "check_temperature",
-                "source": [ThermostatStateEnum.IDLE, ThermostatStateEnum.HEATING],
+                "source": [
+                    ThermostatStateEnum.IDLE,
+                    ThermostatStateEnum.HEATING,
+                    ThermostatStateEnum.COOLING,
+                ],
                 "dest": ThermostatStateEnum.COOLING,
                 "conditions": "is_too_hot",
             },
@@ -55,7 +63,7 @@ class Thermostat(Device):
             device_name,
             ThermostatStateEnum,
             transitions,
-            ThermostatStateEnum[initial_state],
+            initial_state,
         )
 
     @property

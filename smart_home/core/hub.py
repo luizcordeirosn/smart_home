@@ -101,7 +101,7 @@ class Hub(Subject):
     def enum_map(self):
         return self.__enum_map
 
-    def add_device(self, device_id, device_type, **kwargs):
+    def add_device(self, device_type, device_id, **kwargs):
         device_list = self.devices.get(device_type, [])
 
         if self.exist_device(device_type, device_id):
@@ -144,10 +144,11 @@ class Hub(Subject):
         return routine
 
     def get_devices(self):
-        print("ID | Type | State")
+        print("\nID | Type | State")
         for device_type, devices in self.devices.items():
             for device in devices:
                 print(f"{device.device_id} | {device_type.upper()} | {device.state} ")
+        print("")
 
     def delete_device_by_device_type_and_device_id(self, device_type, device_id):
         device = self.get_device_by_device_type_and_device_id(device_type, device_id)
@@ -174,8 +175,8 @@ class Hub(Subject):
             device_attributes = device.get("attributes", {})
 
             device = self.add_device(
-                device_id,
                 device_type,
+                device_id,
                 device_name=device_name,
                 initial_state=device_initial_state,
             )
@@ -332,8 +333,6 @@ class Hub(Subject):
 
         attributes = action.get("attributes")
 
-        device = device
-
         thermostat_cycle = [
             device.turn_on,
             device.check_temperature,
@@ -371,8 +370,6 @@ class Hub(Subject):
         target_state_name = action.get("target_state")
         target_state_enum = self.enum_map.get(device_type)
         target_state = target_state_enum[target_state_name]
-
-        device = device
 
         cameras_cycle = [
             device.turn_on,

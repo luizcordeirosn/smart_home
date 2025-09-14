@@ -28,8 +28,11 @@ class BrightnessRange(ValidatorDescriptor):
 
 class ValidColor(ValidatorDescriptor):
     def __set__(self, obj, value):
-        if not isinstance(value, ColorEnum):
+        if not isinstance(value, ColorEnum) or (
+            isinstance(value, str) and value not in list(ColorEnum.__members__.keys())
+        ):
             raise ValueError("Color value must be a ColorEnum type")
+
         setattr(obj, self.private_name, value)
 
 
