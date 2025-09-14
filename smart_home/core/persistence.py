@@ -4,7 +4,7 @@ from smart_home.utils.patterns import Singleton
 
 
 class Persistence(Singleton):
-    FILE_SMART_HOME_CONFIG = "smart_home/data/smart_house_config.json"
+    FILE_SMART_HOME_CONFIG = "smart_home/data/smart_home_config.json"
 
     def save_devices_to_json(self, devices):
         configs = self.load_config_from_json()

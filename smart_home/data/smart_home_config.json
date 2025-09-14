@@ -83,7 +83,7 @@
             "type": "door",
             "device_id": "living_room_door",
             "device_name": "Living Room Door",
-            "state": "OPENED",
+            "state": "LOCKED",
             "attributes": {
                 "invalid_attempts": 0
             }
@@ -91,12 +91,12 @@
         {
             "type": "bulb",
             "device_id": "living_room_bulb",
-            "device_name": "Living Room Bulb",
-            "state": "ON",
+            "device_name": "Main Bulb",
+            "state": "OFF",
             "attributes": {
-                "brightness": 75,
+                "brightness": 30,
                 "current_color": "NEUTRAL",
-                "start_usage_time": "2025-09-14 15:35:23"
+                "start_usage_time": "2025-09-14 16:22:50"
             }
         },
         {
@@ -125,9 +125,9 @@
             "type": "thermostat",
             "device_id": "living_room_thermostat",
             "device_name": "Default Thermostat",
-            "state": "OFF",
+            "state": "COOLING",
             "attributes": {
-                "current_temperature": 0.0
+                "current_temperature": 18
             }
         },
         {
