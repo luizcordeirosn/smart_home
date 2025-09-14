@@ -73,10 +73,10 @@
         {
             "type": "door",
             "device_id": "entrance_door",
-            "device_name": "Default Door",
+            "device_name": "Entrance Door",
             "state": "LOCKED",
             "attributes": {
-                "invalid_attempts": 0
+                "invalid_attempts": 2
             }
         },
         {
@@ -92,11 +92,11 @@
             "type": "bulb",
             "device_id": "living_room_bulb",
             "device_name": "Living Room Bulb",
-            "state": "OFF",
+            "state": "ON",
             "attributes": {
                 "brightness": 75,
                 "current_color": "NEUTRAL",
-                "start_usage_time": null
+                "start_usage_time": "2025-09-14 15:35:23"
             }
         },
         {
@@ -106,28 +106,28 @@
             "state": "OFF",
             "attributes": {
                 "power_w": 750,
-                "last_usage_wh": 2.575858333333333,
-                "start_usage_time": "2025-09-14 13:01:50"
+                "last_usage_wh": 0,
+                "start_usage_time": null
             }
         },
         {
             "type": "sprinkler",
             "device_id": "garden_sprinkler",
             "device_name": "Default Sprinkler",
-            "state": "IDLE",
+            "state": "WATERING",
             "attributes": {
                 "flow_rate": 20,
-                "last_usage_lh": 29.138963944444445,
-                "start_usage_time": "2025-09-14 12:58:33"
+                "last_usage_lh": 0,
+                "start_usage_time": "2025-09-14 15:33:09"
             }
         },
         {
             "type": "thermostat",
             "device_id": "living_room_thermostat",
             "device_name": "Default Thermostat",
-            "state": "COOLING",
+            "state": "OFF",
             "attributes": {
-                "current_temperature": 24.5
+                "current_temperature": 0.0
             }
         },
         {
