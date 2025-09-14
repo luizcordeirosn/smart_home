@@ -2,4 +2,8 @@
 smart_home/data/events_log.csv
 smart_home/data/devices_report.csv
 
+# IDE and editor configuration
+.vscode
+
+# Virtual environment
 /venv
