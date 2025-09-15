@@ -39,7 +39,7 @@ class Door(Device):
             device_name,
             DoorEnum,
             transitions,
-            initial_state,
+            initial_state=DoorEnum[initial_state],
             on_exception_method="on_invalid_attempt",
         )
 

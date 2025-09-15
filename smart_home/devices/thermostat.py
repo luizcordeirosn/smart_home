@@ -66,7 +66,7 @@ class Thermostat(Device):
             device_name,
             ThermostatStateEnum,
             transitions,
-            initial_state,
+            initial_state=ThermostatStateEnum[initial_state],
         )
 
     @property

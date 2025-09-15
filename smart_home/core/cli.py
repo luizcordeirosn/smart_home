@@ -1,5 +1,6 @@
 import inspect
 
+from smart_home.core.error import DeviceIndexError
 from smart_home.core.hub import Hub
 from smart_home.core.logger import Logger
 from smart_home.core.observers import EventHandler
@@ -33,10 +34,7 @@ class Cli:
             "5": self.most_used_devices_report,
         }
 
-        self.__type_map = {
-            "str": str,
-            "int": int,
-        }
+        self.__type_map = {"str": str, "int": int, "float": float}
 
         self.__logger = Logger()
         self.__reporter = Reporter()
@@ -246,6 +244,11 @@ class Cli:
                 param_key = attr[0]
                 param_type = attr[1]
                 str_attribute_to_print = param_key.replace("_", " ").title()
+                type_map = self.type_map.get(param_type)
+
+                str_default_value = ""
+                if param_key != "device_id":
+                    str_default_value = " or press ENTER to be default value"
 
                 if param_key == "initial_state":
                     device_enum_values = list(
@@ -253,25 +256,19 @@ class Cli:
                     )
 
                     input_attr = input(
-                        f"{str_attribute_to_print} ({', '.join(device_enum_values)}): "
+                        f"{str_attribute_to_print} ({', '.join(device_enum_values)}{str_default_value}): "
                     )
 
                     input_attr = input_attr.upper()
                 else:
-                    input_attr = input(f"{str_attribute_to_print}: ")
-
-                if input_attr == "":
-                    raise ValueError(
-                        f"Input for '{str_attribute_to_print}' cannot be empty"
+                    input_attr = input(
+                        f"{str_attribute_to_print} ({param_type}{str_default_value}): "
                     )
 
-                if not isinstance(input_attr, self.type_map.get(param_type)):
-                    raise ValueError("Invalid input. Couldn't create the device")
-
-                if param_key == "device_id":
-                    args.append(input_attr)
-                else:
-                    kwargs[attr[0]] = input_attr
+                if param_key == "device_id" and input_attr != "":
+                    args.append(type_map(input_attr))
+                elif param_key != "device_id" and input_attr != "":
+                    kwargs[param_key] = type_map(input_attr)
 
             device = self.smart_home.add_device(*args, **kwargs)
 

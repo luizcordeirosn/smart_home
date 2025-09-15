@@ -44,7 +44,7 @@ class Camera(Device):
             device_name,
             CameraStateEnum,
             transitions,
-            initial_state,
+            initial_state=CameraStateEnum[initial_state],
         )
 
     @property

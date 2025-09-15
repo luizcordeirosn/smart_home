@@ -100,12 +100,12 @@ class Bulb(Device):
         self.event_data["brightness"] = self.brightness
 
     def update_color(self, event):
-        color = event.kwargs.get("color").upper()
+        color = event.kwargs.get("color")
 
         if color is None:
             raise ValueError("color argument is missing")
 
-        self.current_color = color
+        self.current_color = color.upper()
         self.event_data["type"] = EventType.BULB_UPDATE_COLOR
         self.event_data["current_color"] = self.current_color
 
