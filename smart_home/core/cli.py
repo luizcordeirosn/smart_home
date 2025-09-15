@@ -1,6 +1,5 @@
 import inspect
 
-from smart_home.core.error import DeviceIndexError
 from smart_home.core.hub import Hub
 from smart_home.core.logger import Logger
 from smart_home.core.observers import EventHandler
@@ -267,6 +266,8 @@ class Cli:
 
                 if param_key == "device_id" and input_attr != "":
                     args.append(type_map(input_attr))
+                elif param_key == "device_id" and input_attr == "":
+                    raise ValueError("device_id is required")
                 elif param_key != "device_id" and input_attr != "":
                     kwargs[param_key] = type_map(input_attr)
 
