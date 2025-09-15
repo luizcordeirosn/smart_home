@@ -90,14 +90,22 @@ class Bulb(Device):
         self.event_data["usage_time"] = usage_time
 
     def update_brightness(self, event):
-        self.brightness = event.kwargs.get("brightness_value")
+        brightness_value = event.kwargs.get("brightness_value")
 
+        if brightness_value is None:
+            raise ValueError("brightness_value is missing")
+
+        self.brightness = brightness_value
         self.event_data["type"] = EventType.BULB_UPDATE_BRIGHTNESS
         self.event_data["brightness"] = self.brightness
 
     def update_color(self, event):
-        self.current_color = event.kwargs.get("color").upper()
+        color = event.kwargs.get("color").upper()
 
+        if color is None:
+            raise ValueError("color argument is missing")
+
+        self.current_color = color
         self.event_data["type"] = EventType.BULB_UPDATE_COLOR
         self.event_data["current_color"] = self.current_color
 

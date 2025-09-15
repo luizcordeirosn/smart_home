@@ -92,11 +92,11 @@
             "type": "bulb",
             "device_id": "living_room_bulb",
             "device_name": "Living Room Bulb",
-            "state": "OFF",
+            "state": "ON",
             "attributes": {
                 "brightness": 75,
                 "current_color": "NEUTRAL",
-                "start_usage_time": "2025-09-14 16:53:31"
+                "start_usage_time": "2025-09-15 07:45:31"
             }
         },
         {
